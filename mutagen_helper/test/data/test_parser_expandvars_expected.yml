@@ -1,0 +1,14 @@
+name: test
+beta: beta
+sessions:
+  - alpha: alpha
+    append_project_name_to_beta: true
+    options:
+      ignore-vcs: True
+      sync-mode: two-way-resolved
+      default-file-mode-beta: 664
+      default-directory-mode-beta: 775
+      ignore:
+        - node_modules
+        - vendor
+      max-staging-file-size: 1MB

@@ -1,0 +1,38 @@
+[
+  {
+    "Session": "8f18e863-e218-4ae0-a804-c58b5548092c",
+    "Configuration": {
+      "Synchronization mode": "Default (Two Way Safe)",
+      "Maximum entry count": "Unlimited",
+      "Maximum staging file size": "Unlimited",
+      "Symbolic link mode": "Default (Portable)",
+      "Ignore VCS mode": "Default (Propagate)",
+      "Ignores": "None"
+    },
+    "Alpha configuration": {
+      "URL": "D:\\Users\\FRUP67305\\AppData\\Local\\Temp\\pytest-of-frup67305\\pytest-93\\test_up_and_down0\\test3",
+      "Watch mode": "Default (Portable)",
+      "Watch polling interval": "Default (10 seconds)",
+      "File mode": "Default (0600)",
+      "Directory mode": "Default (0700)",
+      "Default file/directory owner": "Default",
+      "Default file/directory group": "Default"
+    },
+    "Beta configuration": {
+      "URL": "vagrant@192.168.1.100:/home/vagrant/projects/custom",
+      "Watch mode": "Default (Portable)",
+      "Watch polling interval": "Default (10 seconds)",
+      "File mode": "Default (0600)",
+      "Directory mode": "Default (0700)",
+      "Default file/directory owner": "Default",
+      "Default file/directory group": "Default"
+    },
+    "Alpha": {
+      "Connection state": "Connected"
+    },
+    "Beta": {
+      "Connection state": "Connected"
+    },
+    "Status": "Watching for changes"
+  }
+]

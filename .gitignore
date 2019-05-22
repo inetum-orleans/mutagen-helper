@@ -1,0 +1,9 @@
+__pycache__
+.pytest_cache
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+dist/
+build/
+mutagen-helper.json

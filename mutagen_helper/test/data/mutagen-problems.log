@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Session: 282dc5bf-faf6-46a2-8d63-083c4a55c47c
+Alpha:
+	URL: D:\Users\FRUP67305\AppData\Local\Temp\pytest-of-frup67305\pytest-88\test_up_and_down0\test1
+	Connection state: Connected
+Beta:
+	URL: C:\devel\projects\mutagen-helper\mutagen_helper\test\vagrant@192.168.1.100\home\vagrant\projects
+	Connection state: Connected
+	Problems:
+		<root>: unable to walk to transition root parent: unable to open synchronization root parent directory: Le chemin d’accès spécifié est introuvable.
+Status: Watching for changes
+-------------------------------------------------------------------------------

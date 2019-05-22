@@ -1,0 +1,10 @@
+include requirements.txt
+include dev-requirements.txt
+include *.lock
+include *.py
+include *.spec
+include LICENSE
+include Pipfile
+include tox.ini
+include *.md
+recursive-include mutagen_helper/test *

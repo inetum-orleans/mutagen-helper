@@ -1,0 +1,12 @@
+project_name: test1
+beta: beta1
+append_project_name_to_beta: true
+options:
+  sync-mode: two-way-resolved
+  default-file-mode-beta: 664
+  default-directory-mode-beta: 775
+  max-staging-file-size: 1MB
+  ignore:
+    - node_modules
+    - vendor
+full_sync: true

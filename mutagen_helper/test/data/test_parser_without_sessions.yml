@@ -1,0 +1,14 @@
+name: test
+alpha: some-alpha
+beta: some-beta
+append_project_name_to_beta: true
+options:
+  - ignore-vcs
+  - sync-mode two-way-resolved
+  - default-file-mode-beta 664
+  - default-directory-mode-beta 775
+  - ignore-vcs
+  - ignore node_modules
+  - ignore vendor
+  - max-staging-file-size 1MB
+fullSync: true

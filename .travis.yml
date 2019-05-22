@@ -1,0 +1,22 @@
+language: python
+python:
+  - 3.6
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
+install:
+  - curl -fsSL -o mutagen.tar.gz https://github.com/havoc-io/mutagen/releases/download/v0.9.0-beta1/mutagen_linux_amd64_v0.9.0-beta1.tar.gz
+  - mkdir mutagen && tar zxvf mutagen.tar.gz -C /home/travis/bin
+  - mutagen daemon start
+  - pip install pip --upgrade
+  - pip install -e .[dev,test] --upgrade
+  - pip install pytest --upgrade
+  - pip install coveralls
+  - pytest --version
+script:
+  - coverage run --source=mutagen_helper setup.py test
+  - python setup.py build
+after_success:
+  - coveralls
