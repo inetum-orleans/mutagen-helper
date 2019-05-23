@@ -12,7 +12,7 @@ files on directories you want to synchronise.
 Install
 -------
 
-- Download binaries right from [github release pages](https://github.com/havoc-io/mutagen/releases)
+- Download binaries right from [github release pages](https://github.com/gfi-centre-ouest/mutagen-helper/releases)
 
 or
 
