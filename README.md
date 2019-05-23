@@ -4,6 +4,7 @@ Mutagen Helper
 [![Latest Version](http://img.shields.io/pypi/v/mutagen-helper.svg)](https://pypi.python.org/pypi/mutagen-helper)
 ![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)
 [![Build Status](http://img.shields.io/travis/gfi-centre-ouest/mutagen-helper.svg)](https://travis-ci.org/gfi-centre-ouest/mutagen-helper)
+[![Coveralls](http://img.shields.io/coveralls/gfi-centre-ouest/mutagen-helper.svg)](https://coveralls.io/github/gfi-centre-ouest/mutagen-helper?branch=develop)
 
 Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisation sessions inside `.mutagen.yml` 
 files on directories you want to synchronise.
@@ -37,7 +38,6 @@ options: # Options can be provided
   ignore:
     - node_modules/
     - vendor/
-    - 
 ```
 
 *important note: mutagen-helper automatically appends the `project_name` to the beta definition. It means that this
