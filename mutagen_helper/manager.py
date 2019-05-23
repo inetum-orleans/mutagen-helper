@@ -1,6 +1,8 @@
 import logging
 import os
+import time
 
+from click import ClickException
 from tinydb import TinyDB, Query
 
 from .parser import YamlProjectParser
@@ -10,7 +12,7 @@ db_filepath = os.path.join(
     os.environ.get("MUTAGEN_HELPER_HOME", os.path.join(os.path.expanduser("~"), ".mutagen-helper")), "db.json")
 
 
-class ManagerException(Exception):
+class ManagerException(ClickException):
     pass
 
 
@@ -42,6 +44,13 @@ class ManagerInternals:
             beta = beta + '/' + project_name
         return beta
 
+    def _check_session_id(self, db_session_id, timeout=5000):
+        start_time = int(round(time.time() * 1000))
+        while not self.wrapper.list(db_session_id):
+            if int(round(time.time() * 1000)) > start_time + timeout:
+                return False
+        return True
+
     def _get_db_session(self, session, project_name, build_if_not_found=False):
         if hasattr(session, 'doc_id'):
             return session
@@ -55,7 +64,7 @@ class ManagerInternals:
                 raise ManagerException("Too many matching sessions")
             for db_session_candidate in db_sessions:
                 db_session_id = db_session_candidate.get('session_id')
-                if not db_session_id or not self.wrapper.list(db_session_id):
+                if not db_session_id or not self._check_session_id(db_session_id):
                     # Invalid session in database
                     logging.warning("Session %s found in mutagen-helper, but doesn't exists in mutagen. "
                                     "Removing from mutagen-helper." % db_session_id)
@@ -132,7 +141,7 @@ class ManagerInternals:
                     'Session %s[%s] (%s) exists, but its configuration for has changed.' % (
                         project_name, name, session_id))
             else:
-                logging.debug('Session %s[%s] (%s) already exists.' % (project_name, name, session_id))
+                logging.info('Session %s[%s] (%s) already exists.' % (project_name, name, session_id))
                 return
         else:
             logging.debug('No session %s[%s] found.' % (name, project_name))
@@ -144,7 +153,7 @@ class ManagerInternals:
         db_session['options'] = options
         db_session['project_name'] = project_name
         if hasattr(db_session, 'doc_id'):
-            self.db.upsert(db_session, doc_ids=[db_session.doc_id])
+            self.db.upsert(db_session, Query().doc_ic == db_session.doc_id)
         else:
             db_session['doc_id'] = self.db.insert(db_session)
 
