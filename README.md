@@ -59,16 +59,18 @@ Usage: __main__.py [OPTIONS] COMMAND [ARGS]...
   Main command group :return:
 
 Options:
-  --version   Show the version and exit.
-  -h, --help  Show this message and exit.
+  --version      Show the version and exit.
+  -v, --verbose  Add more output
+  -s, --silent   No output at all
+  -h, --help     Show this message and exit.
 
 Commands:
-  down     Permanently terminates synchronization sessions
-  list     Lists existing synchronization sessions and their statuses
-  monitor  Shows a dynamic status display for the specified session
-  pause    Pauses synchronization sessions
-  resume   Resumes paused or disconnected synchronization sessions
-  up       Creates and starts a new synchronization sessions
+  up      Creates and starts a new synchronization sessions
+  down    Permanently terminates synchronization sessions
+  pause   Pauses synchronization sessions
+  flush   Flush synchronization sessions
+  resume  Resumes paused or disconnected synchronization sessions
+  list    Lists existing synchronization sessions and their statuses
 ```
 
 Multiple projects support
