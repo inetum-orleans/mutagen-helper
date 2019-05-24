@@ -102,14 +102,18 @@ class ProcessWrapper:
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
-                                   bufsize=-1)
+                                   bufsize=1)
 
         def enqueue_output(process, out, type, queue):
             while True:
                 data = out.read(1)
                 if data:
                     queue.put((type, data))
-                elif process.poll() is not None:
+                if process.poll() is not None:
+                    data = out.read()
+                    if data:
+                        queue.put((type, data))
+                    out.close()
                     break
 
         def listen_stdin(queue):
@@ -141,18 +145,14 @@ class ProcessWrapper:
 
         last_read_time = int(round(time.time() * 1000))
         while True:
+            stream, data = (None, None)
             try:
                 stream, data = queue.get_nowait()
                 recorded.append((stream, data))
                 last_read_time = int(round(time.time() * 1000))
             except Empty:
-                if process.poll() is not None:
-                    remaining_stdout, remaining_sdterr = process.communicate()
-                    if remaining_stdout:
-                        queue.put((ProcessWrapper.STDOUT, remaining_stdout))
-                    if remaining_sdterr:
-                        queue.put((ProcessWrapper.STDERR, remaining_sdterr))
-                    if not remaining_stdout and not remaining_sdterr:
+                if process.stdout.closed and process.stderr.closed:
+                    if queue.qsize() == 0:
                         break
                 else:
                     if recorded and int(round(time.time() * 1000)) - last_read_time > print_output_if_idle:
@@ -166,7 +166,7 @@ class ProcessWrapper:
                             elif stream == ProcessWrapper.STDERR:
                                 sys.stderr.buffer.write(data)
                         recorded = []
-                continue
+                    continue
 
             if stream == ProcessWrapper.STDOUT:
                 stdout = stdout + data
