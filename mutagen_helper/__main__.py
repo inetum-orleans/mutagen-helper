@@ -9,7 +9,7 @@ import sys
 
 import click
 
-from mutagen_helper import __version__
+from mutagen_helper.__version__ import __version__
 from mutagen_helper.manager import Manager
 
 
