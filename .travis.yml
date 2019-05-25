@@ -1,11 +1,8 @@
 language: python
+dist: xenial
 python:
   - 3.6
-matrix:
-  include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
+  - 3.7
 install:
   - curl -fsSL -o mutagen.tar.gz https://github.com/havoc-io/mutagen/releases/download/v0.9.0-beta2/mutagen_linux_amd64_v0.9.0-beta2.tar.gz
   - mkdir mutagen && tar zxvf mutagen.tar.gz -C /home/travis/bin
