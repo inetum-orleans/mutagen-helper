@@ -13,9 +13,11 @@ install:
   - pip install pip --upgrade
   - pip install -e .[dev,test] --upgrade
   - pip install pytest --upgrade
+  - pip install flake8
   - pip install coveralls
   - pytest --version
 script:
+  - flake8 mutagen_helper
   - coverage run --source=mutagen_helper setup.py test
   - python setup.py build
 after_success:

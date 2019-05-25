@@ -40,13 +40,13 @@ def test_manager_project_files(manager: Manager, cwd_path):
     mutagen1 = os.path.join(path1, '.mutagen.yml')
     mutagen2 = os.path.join(path3, '.mutagen.yaml')
 
-    with open(os.path.join(path1, '.mutagen.yml'), 'w') as f:
+    with open(os.path.join(path1, '.mutagen.yml'), 'w'):
         pass
 
-    with open(os.path.join(path3, '.mutagen.yaml'), 'w') as f:
+    with open(os.path.join(path3, '.mutagen.yaml'), 'w'):
         pass
 
-    with open(os.path.join(path4, '.mutagen.yaml'), 'w') as f:
+    with open(os.path.join(path4, '.mutagen.yaml'), 'w'):
         pass
 
     files = list(manager.project_files(cwd_path))

@@ -8,6 +8,7 @@ pytest = "*"
 pyinstaller = "*"
 zest-releaser = {extras = ["recommended"],version = "*"}
 githubrelease = "*"
+flake8 = "*"
 
 [packages]
 click = "*"

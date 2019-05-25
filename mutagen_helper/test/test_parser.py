@@ -1,4 +1,3 @@
-import json
 import os
 
 import pkg_resources
@@ -25,6 +24,7 @@ def test_parser_expandvars(parser: YamlProjectParser):
     os.environ['BETA'] = 'beta'
 
     expandvars = parser.parse(pkg_resources.resource_filename(__name__, "data/test_parser_expandvars.yml"))
-    expandvars_expected = parser.parse(pkg_resources.resource_filename(__name__, "data/test_parser_expandvars_expected.yml"))
+    expandvars_expected = parser.parse(
+        pkg_resources.resource_filename(__name__, "data/test_parser_expandvars_expected.yml"))
 
     assert expandvars == expandvars_expected
