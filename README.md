@@ -6,8 +6,8 @@ Mutagen Helper
 [![Build Status](http://img.shields.io/travis/gfi-centre-ouest/mutagen-helper.svg)](https://travis-ci.org/gfi-centre-ouest/mutagen-helper)
 [![Coveralls](http://img.shields.io/coveralls/gfi-centre-ouest/mutagen-helper.svg)](https://coveralls.io/github/gfi-centre-ouest/mutagen-helper?branch=develop)
 
-Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisation sessions inside `.mutagen.yml` 
-files on directories you want to synchronise.
+Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisation sessions inside a configuration file 
+on directories you want to synchronise.
 
 Install
 -------
