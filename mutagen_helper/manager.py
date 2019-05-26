@@ -142,7 +142,7 @@ class ManagerInternals:
         return session_id
 
     def project_file(self, path):
-        candidates = ['.mutagen.yml', '.mutagen.yaml']
+        candidates = ['mutagen.yml', 'mutagen.yaml', '.mutagen.yml', '.mutagen.yaml']
         for candidate in candidates:
             candidate_path = os.path.join(path, candidate)
             if os.path.isfile(os.path.join(path, candidate)):
