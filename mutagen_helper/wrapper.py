@@ -31,6 +31,10 @@ class DaemonNotRunningException(WrapperRunException):
     pass
 
 
+class MultipleSessionsException(WrapperRunException):
+    pass
+
+
 class MutagenListParser:
     def _is_separator_line(self, line):
         return line.startswith('-' * 10)
@@ -249,40 +253,66 @@ class MutagenWrapper(ProcessWrapper):
             return match.group(1)
         raise WrapperException("Invalid response: " + ret)
 
-    def terminate(self, session_id=None):
-        if session_id:
-            self.run(['terminate', session_id])
-        else:
-            self.run(['terminate', '--all'])
+    def terminate(self, session_id=None, label_selector=None, one=False):
+        result = self._session_control('terminate', session_id, label_selector)
+        ret = result.stdout
+        session_ids = re.findall('Terminating session\\s(.*?)\\.', ret)
+        return self._handle_result(result, session_ids, one)
 
-    def flush(self, session_id=None):
-        if session_id:
-            self.run(['flush', session_id])
-        else:
-            self.run(['flush', '--all'])
+    def flush(self, session_id=None, label_selector=None, one=False):
+        result = self._session_control('flush', session_id, label_selector)
+        ret = result.stdout
+        session_ids = re.findall('for session\\s(.*?)\\.', ret)
+        return self._handle_result(result, session_ids, one)
 
-    def pause(self, session_id=None):
-        if session_id:
-            self.run(['pause', session_id])
-        else:
-            self.run(['pause', '--all'])
+    def pause(self, session_id=None, label_selector=None, one=False):
+        result = self._session_control('pause', session_id, label_selector)
+        ret = result.stdout
+        session_ids = re.findall('Pausing session\\s(.*?)\\.', ret)
+        return self._handle_result(result, session_ids, one)
 
-    def resume(self, session_id=None):
-        if session_id:
-            self.run(['resume', session_id])
-        else:
-            self.run(['resume', '--all'])
+    def resume(self, session_id=None, label_selector=None, one=False):
+        result = self._session_control('resume', session_id, label_selector)
+        ret = result.stdout
+        session_ids = re.findall('Resuming session\\s(.*?)\\.', ret)
+        return self._handle_result(result, session_ids, one)
 
-    def list(self, session_id=None):
+    def _session_control(self, command, session_id, label_selector):
+        args = [command]
+        if session_id:
+            args.append(session_id)
+        elif label_selector:
+            args.append('--label-selector')
+            args.append(label_selector)
+        else:
+            args.append('--all')
+        return self.run(args)
+
+    def list(self, session_id=None, label_selector=None, one=False):
         try:
+            args = ['list']
             if session_id:
-                result = self.run(['list', session_id, '-l'])
-            else:
-                result = self.run(['list', '-l'])
+                args.append(session_id)
+            if label_selector:
+                args.append('--label-selector')
+                args.append(label_selector)
+            args.append('-l')
+            result = self.run(args)
         except MutagenRunException as e:
             if 'unable to locate requested sessions' in e.result.stderr:
                 return []
             raise
 
         output = result.stdout
-        return self.list_parser.parse(output)
+        parsed = self.list_parser.parse(output)
+        return self._handle_result(result, parsed, one)
+
+    def _handle_result(self, result, items, one):
+        if one:
+            if len(items) > 1:
+                raise MultipleSessionsException(result)
+            elif len(items) == 1:
+                return items[0]
+            else:
+                return None
+        return items

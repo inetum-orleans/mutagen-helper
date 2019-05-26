@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fa5179c650e7ee5c220a8986411b8cfa58f7d04e6e8ccd178167b0f19387bd2e"
+            "sha256": "9c4d928551771897a8c72ad628a54f92ffe9b0328218aecce94637d84ed5beda"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -40,14 +40,6 @@
             ],
             "index": "pypi",
             "version": "==5.1"
-        },
-        "tinydb": {
-            "hashes": [
-                "sha256:260b1f69168a24518af63f0270c72dc026476607016a0105aef6a966d8d2fbdc",
-                "sha256:a05c4c81e6e867c4f8a2e51c5236d0d897019aa5e9296f5947455b0bdd3c519d"
-            ],
-            "index": "pypi",
-            "version": "==3.13.0"
         }
     },
     "develop": {
@@ -113,6 +105,7 @@
                 "sha256:05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d",
                 "sha256:f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"
             ],
+            "markers": "sys_platform == 'win32'",
             "version": "==0.4.1"
         },
         "docutils": {
@@ -256,6 +249,13 @@
             ],
             "index": "pypi",
             "version": "==4.5.0"
+        },
+        "pywin32-ctypes": {
+            "hashes": [
+                "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942",
+                "sha256:9dc2d991b3479cc2df15930958b674a48a227d5361d413827a4cfd0b5876fc98"
+            ],
+            "version": "==0.2.0"
         },
         "readme-renderer": {
             "hashes": [

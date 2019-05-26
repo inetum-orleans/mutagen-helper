@@ -1,9 +1,8 @@
+import copy
 import logging
 import os
-import time
 
 from click import ClickException
-from tinydb import TinyDB, Query
 
 from .parser import YamlProjectParser
 from .wrapper import MutagenWrapper
@@ -21,19 +20,6 @@ class ManagerInternals:
         self.project_parser = YamlProjectParser()
         self.wrapper = MutagenWrapper()
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        self.db = TinyDB(filepath, default_table='sessions')
-        if purge:
-            self.db.purge_tables()
-        self.db.table('sessions', cache_size=0)
-
-    def _append_project_name_to_beta(self, session, project_name):
-        beta = session['beta']
-        if session['append_project_name_to_beta']:
-            sep = '/'
-            if beta.endswith('/') or beta.endswith('\\'):
-                sep = ''
-            beta = beta + sep + project_name
-        session['beta'] = beta
 
     def _effective_beta(self, session, project_name):
         beta = session['beta']
@@ -44,177 +30,116 @@ class ManagerInternals:
             beta = beta + '/' + project_name
         return beta
 
-    def _check_session_id(self, db_session_id, timeout=5000):
-        start_time = int(round(time.time() * 1000))
-        while not self.wrapper.list(db_session_id):
-            if int(round(time.time() * 1000)) > start_time + timeout:
-                return False
-        return True
+    def _build_label_list(self, project_name, name=None, alpha=None, beta=None, selector=False):
+        labels = []
+        value_separator = "==" if selector else "="
+        if project_name:
+            labels.append("project_name%s%s" % (value_separator, project_name))
+        if name:
+            labels.append("name%s%s" % (value_separator, name))
+        if alpha:
+            labels.append("alpha%s%s" % (value_separator, alpha))
+        if beta:
+            labels.append("beta%s%s" % (value_separator, beta))
+        return labels
 
-    def _get_db_session(self, session, project_name, build_if_not_found=False):
-        if hasattr(session, 'doc_id'):
-            return session
+    def _build_label_selector(self, project_name, name=None, alpha=None, beta=None):
+        return ','.join(self._build_label_list(project_name, name, alpha, beta, selector=True))
 
-        name = session['name']
-        db_session = None
-
-        db_sessions = self.db.search(self._build_session_condition(session))
-        if db_sessions:
-            if len(db_sessions) > 1:
-                raise ManagerException("Too many matching sessions")
-            for db_session_candidate in db_sessions:
-                db_session_id = db_session_candidate.get('session_id')
-                if not db_session_id or not self._check_session_id(db_session_id):
-                    # Invalid session in database
-                    logging.warning("Session %s found in mutagen-helper, but doesn't exists in mutagen. "
-                                    "Removing from mutagen-helper." % db_session_id)
-                    self.db.remove(doc_ids=[db_session_candidate.doc_id])
-                else:
-                    db_session = db_session_candidate
-                    break
-
-        if not db_session and build_if_not_found:
-            alpha = session['alpha']
-            beta = self._effective_beta(session, project_name)
-            db_session = self._build_db_session(project_name, name, alpha, beta, session.get('options'))
-        return db_session
-
-    def _build_db_session(self, project_name, name, alpha, beta, options=None, session_id=None):
-        return {
-            'project_name': project_name,
-            'alpha': alpha,
-            'beta': beta,
-            'name': name,
-            'options': options,
-            'session_id': session_id
-        }
-
-    def _build_session_condition(self, session):
-        query = Query()
-        return (query.project_name == session['project_name']) & (query.name == session['name'])
-
-    def _session_has_changed(self, db_session, session, project_name):
-        return db_session['alpha'] != session['alpha'] or \
-               db_session['beta'] != self._effective_beta(session, project_name) or \
-               db_session['options'] != session['options']
-
-    def _dispatch_project_files(self, path, dispatcher_function):
+    def _dispatch_project_files(self, path, dispatcher_function, dispatch_session=False):
         betas = dict()
-        for db_session in self.db.all():
-            betas[os.path.abspath(os.path.normpath(db_session['beta']))] = db_session
+        for session_info in self.wrapper.list():
+            betas[os.path.abspath(os.path.normpath(session_info['Beta configuration']['URL']))] = session_info
 
         for project_file in self.project_files(path):
             project = self.project_parser.parse(project_file)
             project_name = project['project_name']
             for session in project['sessions']:
-                betas[os.path.abspath(os.path.normpath(self._effective_beta(session, project_name)))] = session
+                betas[os.path.abspath(
+                    os.path.normpath(self._effective_beta(session, project_name)))] = session
 
         ret = []
         for project_file in self.project_files(path):
             project = self.project_parser.parse(project_file)
             project_name = project['project_name']
-            for session in project['sessions']:
-                beta_counterpart = betas.get(os.path.abspath(os.path.dirname(os.path.normpath((project_file)))))
-                if beta_counterpart:
-                    logging.debug("Skip file %s because it match beta of session %s (%s)." % (
-                        project_file, beta_counterpart['project_name'], beta_counterpart['name']))
-                    continue
-                dispatcher_ret = dispatcher_function(session, project_name)
-                if dispatcher_ret is not None:
-                    ret.append(dispatcher_ret)
+            if dispatch_session:
+                for session in project['sessions']:
+                    beta_counterpart = betas.get(os.path.abspath(os.path.dirname(os.path.normpath((project_file)))))
+                    if beta_counterpart:
+                        logging.debug("Skip file %s because it match beta of session %s (%s)." % (
+                            project_file, beta_counterpart['project_name'], beta_counterpart['name']))
+                        continue
+                    dispatcher_ret = dispatcher_function(session, project_name)
+                    if dispatcher_ret is not None:
+                        ret.append(dispatcher_ret)
+            else:
+                dispatcher_ret = dispatcher_function(project_name)
+                if dispatcher_ret:
+                    ret.extend(dispatcher_ret)
 
         return ret
 
     def up(self, path):
-        return self._dispatch_project_files(path, self.up_session)
+        return self._dispatch_project_files(path, self.up_session, dispatch_session=True)
 
     def up_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name, build_if_not_found=True)
-
         name = session['name']
-        session_id = db_session.get('session_id')
-        options = session.get('options')
 
-        if session_id and self.wrapper.list(session_id):
-            if self._session_has_changed(db_session, session, project_name):
-                logging.info(
-                    'Session %s[%s] (%s) exists, but its configuration for has changed.' % (
-                        project_name, name, session_id))
-            else:
-                logging.info('Session %s[%s] (%s) already exists.' % (project_name, name, session_id))
-                return
+        session_info = self.wrapper.list(label_selector=self._build_label_selector(project_name, session['name']),
+                                         one=True)
+        if session_info:
+            logging.info('Session %s[%s] (%s) already exists.' % (project_name, name, session_info['Session']))
+            return
         else:
             logging.debug('No session %s[%s] found.' % (name, project_name))
 
-        session_id = self.wrapper.create(db_session['alpha'], db_session['beta'], db_session.get('options'))
+        alpha = session['alpha']
+        beta = self._effective_beta(session, project_name)
+        options = copy.deepcopy(session.get('options', {}))
+        if 'label' not in options:
+            options['label'] = self._build_label_list(project_name, session['name'])
+        else:
+            options['label'].extend(self._build_label_list(project_name, session['name']))
+
+        session_id = self.wrapper.create(alpha, beta, options)
         logging.info('Session %s[%s] (%s) created.' % (project_name, name, session_id))
 
-        db_session['session_id'] = session_id
-        db_session['options'] = options
-        db_session['project_name'] = project_name
-        if hasattr(db_session, 'doc_id'):
-            self.db.upsert(db_session, Query().doc_ic == db_session.doc_id)
-        else:
-            db_session['doc_id'] = self.db.insert(db_session)
-
-        return db_session
+        return session_id
 
     def down(self, path):
-        return self._dispatch_project_files(path, self.down_session)
+        return self._dispatch_project_files(path, self.down_project)
 
-    def down_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name)
-        if not db_session or not db_session.get('session_id'):
-            logging.warning('Session %s[%s] is not available.' % (project_name, session['name']))
-            return
-
-        self.wrapper.terminate(db_session['session_id'])
-        logging.info('Session %s[%s] (%s) terminated.' % (project_name, session['name'], db_session['session_id']))
-
-        if hasattr(db_session, 'doc_id'):
-            self.db.remove(doc_ids=[db_session.doc_id])
-
-        return db_session
+    def down_project(self, project_name):
+        session_ids = self.wrapper.terminate(label_selector=self._build_label_selector(project_name))
+        for session_id in session_ids:
+            logging.info('Session %s (%s) terminated.' % (project_name, session_id))
+        return session_ids
 
     def flush(self, path):
-        return self._dispatch_project_files(path, self.flush_session)
+        return self._dispatch_project_files(path, self.flush_project)
 
-    def flush_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name)
-        if not db_session or not db_session.get('session_id'):
-            logging.warning('Session %s[%s] is not available.' % (project_name, session['name']))
-            return
-
-        self.wrapper.flush(db_session['session_id'])
-        logging.info('Session %s[%s] (%s) flushed.' % (project_name, session['name'], db_session['session_id']))
-
-        return db_session
+    def flush_project(self, project_name):
+        session_ids = self.wrapper.flush(label_selector=self._build_label_selector(project_name))
+        for session_id in session_ids:
+            logging.info('Session %s (%s) flushed.' % (project_name, session_id))
+        return session_ids
 
     def pause(self, path):
-        return self._dispatch_project_files(path, self.pause_session)
+        return self._dispatch_project_files(path, self.pause_project)
 
-    def pause_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name)
-        if not db_session or not db_session.get('session_id'):
-            logging.warning('Session %s[%s] is not available.' % (project_name, session['name']))
-            return
-
-        self.wrapper.pause(db_session['session_id'])
-        logging.info('Session %s[%s] (%s) paused.' % (project_name, session['name'], db_session['session_id']))
-        return db_session
+    def pause_project(self, project_name):
+        session_ids = self.wrapper.pause(label_selector=self._build_label_selector(project_name))
+        for session_id in session_ids:
+            logging.info('Session %s (%s) paused.' % (project_name, session_id))
+        return session_ids
 
     def resume(self, path):
-        return self._dispatch_project_files(path, self.resume_session)
+        return self._dispatch_project_files(path, self.resume_project)
 
-    def resume_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name)
-        if not db_session or not db_session.get('session_id'):
-            logging.warning('Session %s[%s] is not available.' % (project_name, session['name']))
-            return
-
-        self.wrapper.resume(db_session['session_id'])
-        logging.info('Session %s[%s] (%s) resumed.' % (project_name, session['name'], db_session['session_id']))
-        return db_session
+    def resume_project(self, project_name):
+        session_id = self.wrapper.resume(label_selector=self._build_label_selector(project_name))
+        logging.info('Session %s (%s) resumed.' % (project_name, session_id))
+        return session_id
 
     def project_file(self, path):
         candidates = ['.mutagen.yml', '.mutagen.yaml']
@@ -225,21 +150,14 @@ class ManagerInternals:
         return
 
     def list(self, path):
-        return self._dispatch_project_files(path, self.list_session)
+        return self._dispatch_project_files(path, self.list_session, dispatch_session=True)
 
     def list_session(self, session, project_name):
-        db_session = self._get_db_session(session, project_name)
-        if not db_session or not db_session.get('session_id'):
-            logging.warning('Session %s[%s] is not available.' % (project_name, session['name']))
-            return
-
-        mutagen_sessions = self.wrapper.list(db_session['session_id'])
-        if not mutagen_sessions:
-            return
-
-        mutagen_session = mutagen_sessions[0]
-        mutagen_session['Project name'] = project_name
-        mutagen_session['Name'] = session['name']
+        mutagen_session = self.wrapper.list(label_selector=self._build_label_selector(project_name, session['name']),
+                                            one=True)
+        if mutagen_session:
+            mutagen_session['Project name'] = project_name
+            mutagen_session['Name'] = session['name']
 
         return mutagen_session
 

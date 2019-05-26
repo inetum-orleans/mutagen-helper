@@ -13,7 +13,6 @@ flake8 = "*"
 [packages]
 click = "*"
 pyyaml = "*"
-tinydb = "*"
 
 [requires]
 python_version = "3.7"
