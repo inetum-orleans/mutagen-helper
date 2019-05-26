@@ -4,7 +4,10 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use labels feature introduced in mutagen 
+[v0.9.0-beta2](https://github.com/havoc-io/mutagen/releases/tag/v0.9.0-beta2). There's no local database anymore 
+(`~/.mutagen-helper` directory can be removed) ([#4](https://github.com/gfi-centre-ouest/mutagen-helper/issues/4))
+- Add support for YAML configuration files without dot (`mutagen.yml` and `mutagen.yaml`) ([#3](https://github.com/gfi-centre-ouest/mutagen-helper/issues/3))
 
 
 1.0.0a2 (2019-05-25)
