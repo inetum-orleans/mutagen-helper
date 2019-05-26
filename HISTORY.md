@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0b1 (2019-05-27)
+--------------------
 
 - Use labels feature introduced in mutagen 
 [v0.9.0-beta2](https://github.com/havoc-io/mutagen/releases/tag/v0.9.0-beta2). There's no local database anymore 
