@@ -69,7 +69,7 @@ def test_up_and_down(manager: Manager, cwd_path: str):
     os.mkdir(path3)
     os.mkdir(path4)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
+    mutagen1 = os.path.join(path1, 'mutagen.yml')
     mutagen2 = os.path.join(path3, '.mutagen.yaml')
 
     with open(mutagen1, 'wb') as f:
@@ -151,7 +151,7 @@ def test_up_and_down_with_resume_pause_flush(manager: Manager, cwd_path: str):
     os.mkdir(path4)
 
     mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen2 = os.path.join(path3, '.mutagen.yaml')
+    mutagen2 = os.path.join(path3, 'mutagen.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
