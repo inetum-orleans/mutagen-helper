@@ -79,7 +79,7 @@ class ManagerInternals:
                             if dispatcher_ret is not None:
                                 ret.append(dispatcher_ret)
                 else:
-                    dispatcher_ret = dispatcher_function(project_name)
+                    dispatcher_ret = dispatcher_function(project['project_name'])
                     if dispatcher_ret:
                         ret.extend(dispatcher_ret)
 
