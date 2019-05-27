@@ -311,7 +311,7 @@ class MutagenWrapper(ProcessWrapper):
             args.append('--all')
         return self.run(args)
 
-    def list(self, session_id=None, label_selector=None, one=False):
+    def list(self, session_id=None, label_selector=None, long=False, one=False):
         try:
             args = ['list']
             if session_id:
@@ -319,7 +319,8 @@ class MutagenWrapper(ProcessWrapper):
             if label_selector:
                 args.append('--label-selector')
                 args.append(label_selector)
-            args.append('-l')
+            if long:
+                args.append('--long')
             result = self.run(args)
         except MutagenRunException as e:
             if 'unable to locate requested sessions' in e.result.stderr:

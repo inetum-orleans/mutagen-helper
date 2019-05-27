@@ -114,9 +114,10 @@ def flush(path=None, project=None, session=None):
 @click.argument('project', required=False)
 @click.argument('session', required=False)
 @click.option('-p', '--path', required=False)
-def list(project=None, session=None, path=None):
+@click.option('-l', '--long', required=False, is_flag=True)
+def list(project=None, session=None, path=None, long=False):
     manager = Manager()
-    ret = manager.list(path, project, session)
+    ret = manager.list(path, project, session, long)
     print(json.dumps(ret, indent=2))
 
 

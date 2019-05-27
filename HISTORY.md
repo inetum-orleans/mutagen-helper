@@ -4,7 +4,9 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Add optional support for environment expansion replacements using [expandvars](https://github.com/sayanarijit/expandvars) dependency.
+- Add default value support for environment expansion replacements, with 
+[expandvars](https://github.com/sayanarijit/expandvars)
+- Upgrade list command to support short and long listing (`--long` option)
 
 
 1.0.0b2 (2019-05-27)
