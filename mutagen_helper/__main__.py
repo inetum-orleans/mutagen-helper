@@ -69,44 +69,54 @@ def main(verbose, silent):
 
 @main.command(help='Creates and starts a new synchronization sessions', help_priority=1)
 @click.option('-p', '--path', required=False)
-def up(path):
+def up(path=None):
     manager = Manager()
     manager.up(path)
 
 
 @main.command(help='Permanently terminates synchronization sessions', help_priority=2)
 @click.option('-p', '--path', required=False)
-def down(path):
+@click.option('-P', '--project', required=False)
+@click.option('-S', '--session', required=False)
+def down(path=None, project=None, session=None):
     manager = Manager()
-    manager.down(path)
+    manager.down(path, project, session)
 
 
 @main.command(help='Pauses synchronization sessions', help_priority=3)
 @click.option('-p', '--path', required=False)
-def pause(path):
+@click.option('-P', '--project', required=False)
+@click.option('-S', '--session', required=False)
+def pause(path=None, project=None, session=None):
     manager = Manager()
-    manager.pause(path)
+    manager.pause(path, project, session)
 
 
 @main.command(help='Resumes paused or disconnected synchronization sessions', help_priority=4)
 @click.option('-p', '--path', required=False)
-def resume(path):
+@click.option('-P', '--project', required=False)
+@click.option('-S', '--session', required=False)
+def resume(path=None, project=None, session=None):
     manager = Manager()
-    manager.resume(path)
+    manager.resume(path, project, session)
 
 
 @main.command(help='Flush synchronization sessions', help_priority=4)
 @click.option('-p', '--path', required=False)
-def flush(path):
+@click.option('-P', '--project', required=False)
+@click.option('-S', '--session', required=False)
+def flush(path=None, project=None, session=None):
     manager = Manager()
-    manager.flush(path)
+    manager.flush(path, project, session)
 
 
 @main.command(help='Lists existing synchronization sessions and their statuses', help_priority=5)
 @click.option('-p', '--path', required=False)
-def list(path):
+@click.option('-P', '--project', required=False)
+@click.option('-S', '--session', required=False)
+def list(path=None, project=None, session=None):
     manager = Manager()
-    ret = manager.list(path)
+    ret = manager.list(path, project, session)
     print(json.dumps(ret, indent=2))
 
 

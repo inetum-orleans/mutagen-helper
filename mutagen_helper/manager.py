@@ -15,6 +15,10 @@ class ManagerException(ClickException):
     pass
 
 
+class ManagerOptionsException(ClickException):
+    pass
+
+
 class ManagerInternals:
     def __init__(self, purge=False, filepath=db_filepath):
         self.project_parser = YamlProjectParser()
@@ -46,43 +50,45 @@ class ManagerInternals:
     def _build_label_selector(self, project_name, name=None, alpha=None, beta=None):
         return ','.join(self._build_label_list(project_name, name, alpha, beta, selector=True))
 
-    def _dispatch_project_files(self, path, dispatcher_function, dispatch_session=False):
+    def _dispatch_project_files(self, path, dispatcher_function, dispatch_session=False, project_name=None,
+                                session_name=None):
         betas = dict()
         for session_info in self.wrapper.list():
             betas[os.path.abspath(os.path.normpath(session_info['Beta configuration']['URL']))] = session_info
 
         for project_file in self.project_files(path):
             project = self.project_parser.parse(project_file)
-            project_name = project['project_name']
-            for session in project['sessions']:
+            for project_session in project['sessions']:
                 betas[os.path.abspath(
-                    os.path.normpath(self._effective_beta(session, project_name)))] = session
+                    os.path.normpath(self._effective_beta(project_session, project['project_name'])))] = project_session
 
         ret = []
         for project_file in self.project_files(path):
+            project_dirname = os.path.abspath(os.path.dirname(os.path.normpath((project_file))))
             project = self.project_parser.parse(project_file)
-            project_name = project['project_name']
-            if dispatch_session:
-                for session in project['sessions']:
-                    beta_counterpart = betas.get(os.path.abspath(os.path.dirname(os.path.normpath((project_file)))))
-                    if beta_counterpart:
-                        logging.debug("Skip file %s because it match beta of session %s (%s)." % (
-                            project_file, beta_counterpart['project_name'], beta_counterpart['name']))
-                        continue
-                    dispatcher_ret = dispatcher_function(session, project_name)
-                    if dispatcher_ret is not None:
-                        ret.append(dispatcher_ret)
-            else:
-                dispatcher_ret = dispatcher_function(project_name)
-                if dispatcher_ret:
-                    ret.extend(dispatcher_ret)
+            if not project_name or project_name == project['project_name']:
+                if dispatch_session or session_name:
+                    for project_session in project['sessions']:
+                        if not session_name or session_name == project_session['name']:
+                            beta_counterpart = betas.get(project_dirname)
+                            if beta_counterpart:
+                                logging.debug("Skip file %s because it match beta of session %s (%s)." % (
+                                    project_file, beta_counterpart['project_name'], beta_counterpart['name']))
+                                continue
+                            dispatcher_ret = dispatcher_function(project['project_name'], project_session)
+                            if dispatcher_ret is not None:
+                                ret.append(dispatcher_ret)
+                else:
+                    dispatcher_ret = dispatcher_function(project_name)
+                    if dispatcher_ret:
+                        ret.extend(dispatcher_ret)
 
         return ret
 
     def up(self, path):
-        return self._dispatch_project_files(path, self.up_session, dispatch_session=True)
+        return self._dispatch_project_files(path, self.up_handler, dispatch_session=True)
 
-    def up_session(self, session, project_name):
+    def up_handler(self, project_name, session):
         name = session['name']
 
         session_info = self.wrapper.list(label_selector=self._build_label_selector(project_name, session['name']),
@@ -106,38 +112,46 @@ class ManagerInternals:
 
         return session_id
 
-    def down(self, path):
-        return self._dispatch_project_files(path, self.down_project)
+    def down(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.down_handler, project_name=project_name,
+                                            session_name=session_name)
 
-    def down_project(self, project_name):
-        session_ids = self.wrapper.terminate(label_selector=self._build_label_selector(project_name))
+    def down_handler(self, project_name, session=None):
+        session_ids = self.wrapper.terminate(
+            label_selector=self._build_label_selector(project_name, name=session['name'] if session else None))
         for session_id in session_ids:
             logging.info('Session %s (%s) terminated.' % (project_name, session_id))
         return session_ids
 
-    def flush(self, path):
-        return self._dispatch_project_files(path, self.flush_project)
+    def flush(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.flush_handler, project_name=project_name,
+                                            session_name=session_name)
 
-    def flush_project(self, project_name):
-        session_ids = self.wrapper.flush(label_selector=self._build_label_selector(project_name))
+    def flush_handler(self, project_name, session=None):
+        session_ids = self.wrapper.flush(
+            label_selector=self._build_label_selector(project_name, name=session['name'] if session else None))
         for session_id in session_ids:
             logging.info('Session %s (%s) flushed.' % (project_name, session_id))
         return session_ids
 
-    def pause(self, path):
-        return self._dispatch_project_files(path, self.pause_project)
+    def pause(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.pause_handler, project_name=project_name,
+                                            session_name=session_name)
 
-    def pause_project(self, project_name):
-        session_ids = self.wrapper.pause(label_selector=self._build_label_selector(project_name))
+    def pause_handler(self, project_name, session=None):
+        session_ids = self.wrapper.pause(
+            label_selector=self._build_label_selector(project_name, name=session['name'] if session else None))
         for session_id in session_ids:
             logging.info('Session %s (%s) paused.' % (project_name, session_id))
         return session_ids
 
-    def resume(self, path):
-        return self._dispatch_project_files(path, self.resume_project)
+    def resume(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.resume_handler, project_name=project_name,
+                                            session_name=session_name)
 
-    def resume_project(self, project_name):
-        session_id = self.wrapper.resume(label_selector=self._build_label_selector(project_name))
+    def resume_handler(self, project_name, session=None):
+        session_id = self.wrapper.resume(
+            label_selector=self._build_label_selector(project_name, name=session['name'] if session else None))
         logging.info('Session %s (%s) resumed.' % (project_name, session_id))
         return session_id
 
@@ -149,12 +163,14 @@ class ManagerInternals:
                 return candidate_path
         return
 
-    def list(self, path):
-        return self._dispatch_project_files(path, self.list_session, dispatch_session=True)
+    def list(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.list_handler, dispatch_session=True, project_name=project_name,
+                                            session_name=session_name)
 
-    def list_session(self, session, project_name):
-        mutagen_session = self.wrapper.list(label_selector=self._build_label_selector(project_name, session['name']),
-                                            one=True)
+    def list_handler(self, project_name, session=None):
+        mutagen_session = self.wrapper.list(
+            label_selector=self._build_label_selector(project_name, name=session['name'] if session else None),
+            one=True)
         if mutagen_session:
             mutagen_session['Project name'] = project_name
             mutagen_session['Name'] = session['name']
@@ -189,23 +205,32 @@ class Manager:
         else:
             return os.getcwd()
 
-    def up(self, path):
+    def _check_args(self, project=None, session=None):
+        if session and not project:
+            raise ManagerOptionsException("--project option should be defined when --session option is used")
+
+    def up(self, path=None):
         return self._internals.up(self._sanitize_path(path))
 
-    def down(self, path):
-        return self._internals.down(self._sanitize_path(path))
+    def down(self, path=None, project=None, session=None):
+        self._check_args(project, session)
+        return self._internals.down(self._sanitize_path(path), project_name=project, session_name=session)
 
-    def resume(self, path):
-        return self._internals.resume(self._sanitize_path(path))
+    def resume(self, path=None, project=None, session=None):
+        self._check_args(project, session)
+        return self._internals.resume(self._sanitize_path(path), project_name=project, session_name=session)
 
-    def pause(self, path):
-        return self._internals.pause(self._sanitize_path(path))
+    def pause(self, path=None, project=None, session=None):
+        self._check_args(project, session)
+        return self._internals.pause(self._sanitize_path(path), project_name=project, session_name=session)
 
-    def list(self, path):
-        return self._internals.list(self._sanitize_path(path))
+    def list(self, path=None, project=None, session=None):
+        self._check_args(project, session)
+        return self._internals.list(self._sanitize_path(path), project_name=project, session_name=session)
 
-    def flush(self, path):
-        return self._internals.flush(self._sanitize_path(path))
+    def flush(self, path=None, project=None, session=None):
+        self._check_args(project, session)
+        return self._internals.flush(self._sanitize_path(path), project_name=project, session_name=session)
 
     def project_files(self, path):
         return self._internals.project_files(self._sanitize_path(path))
