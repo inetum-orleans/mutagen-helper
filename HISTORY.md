@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0b3 (2019-05-27)
+--------------------
 
 - Add default value support for environment expansion replacements, with 
 [expandvars](https://github.com/sayanarijit/expandvars)
