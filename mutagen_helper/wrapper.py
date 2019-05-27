@@ -22,6 +22,15 @@ class WrapperRunException(WrapperException):
         self.result = kwargs.pop('result')
         super().__init__(*args, **kwargs)
 
+    def format_message(self):
+        message = super().format_message()
+        if self.result:
+            if self.result.stdout:
+                message = message + os.linesep + self.result.stdout
+            if self.result.stderr:
+                message = message + os.linesep + self.result.stderr
+        return message
+
 
 class MutagenRunException(WrapperRunException):
     pass
@@ -39,10 +48,10 @@ class MutagenListParser:
     def _is_separator_line(self, line):
         return line.startswith('-' * 10)
 
-    def parse(self, output: str):
-        if not output:
+    def parse(self, result):
+        if not result.stdout:
             return []
-        lines = output.splitlines()
+        lines = result.stdout.splitlines()
         if not self._is_separator_line(lines[0]):
             raise
         del lines[0]
@@ -65,7 +74,7 @@ class MutagenListParser:
                     if stack_size == len(stack) + 1:
                         current_object = {}
                         if stack[-1][previous_key]:
-                            raise WrapperException("Invalid structure for mutagen output")
+                            raise WrapperRunException("Invalid structure for mutagen output", result=result)
                         stack[-1][previous_key] = current_object
                         stack.append(current_object)
                     else:
@@ -77,11 +86,13 @@ class MutagenListParser:
 
                     stack_size = value.count('\t') + 1
                     value = value.strip()
+                    if value == '':
+                        continue
 
                     if stack_size == len(stack) + 1:
                         current_object = []
                         if stack[-1][previous_key]:
-                            raise WrapperException("Invalid structure for mutagen output")
+                            raise WrapperRunException("Invalid structure for mutagen output", result=result)
                         stack[-1][previous_key] = current_object
                         stack.append(current_object)
                     else:
@@ -90,7 +101,7 @@ class MutagenListParser:
                     if isinstance(current_object, list):
                         current_object.append(value)
                     else:
-                        raise WrapperException("Invalid structure for mutagen output")
+                        raise WrapperRunException("Invalid structure for mutagen output", result=result)
         return sessions
 
 
@@ -303,8 +314,7 @@ class MutagenWrapper(ProcessWrapper):
                 return []
             raise
 
-        output = result.stdout
-        parsed = self.list_parser.parse(output)
+        parsed = self.list_parser.parse(result)
         return self._handle_result(result, parsed, one)
 
     def _handle_result(self, result, items, one):
