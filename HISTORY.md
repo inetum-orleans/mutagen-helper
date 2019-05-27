@@ -4,8 +4,10 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add `project` and `session` arguments to commands
+- Fix stuck sessions on `up` command because of invalid stdin/stdout support
+- Fix missing project name in output
+- Remove dead code
 
 1.0.0b1 (2019-05-27)
 --------------------
