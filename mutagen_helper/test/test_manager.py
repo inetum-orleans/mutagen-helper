@@ -8,7 +8,7 @@ from mutagen_helper.manager import Manager
 
 @pytest.fixture
 def manager(cwd_path):
-    return Manager(True, db_filepath=os.path.join(cwd_path, 'db.json'))
+    return Manager()
 
 
 @pytest.fixture

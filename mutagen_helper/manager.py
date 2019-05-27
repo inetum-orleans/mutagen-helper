@@ -2,8 +2,6 @@ import copy
 import logging
 import os
 
-from click import ClickException
-
 from .parser import YamlProjectParser
 from .wrapper import MutagenWrapper
 
@@ -11,19 +9,10 @@ db_filepath = os.path.join(
     os.environ.get("MUTAGEN_HELPER_HOME", os.path.join(os.path.expanduser("~"), ".mutagen-helper")), "db.json")
 
 
-class ManagerException(ClickException):
-    pass
-
-
-class ManagerOptionsException(ClickException):
-    pass
-
-
 class ManagerInternals:
-    def __init__(self, purge=False, filepath=db_filepath):
+    def __init__(self):
         self.project_parser = YamlProjectParser()
         self.wrapper = MutagenWrapper()
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
     def _effective_beta(self, session, project_name):
         beta = session['beta']
@@ -196,8 +185,8 @@ class ManagerInternals:
 
 
 class Manager:
-    def __init__(self, purge=False, db_filepath=db_filepath):
-        self._internals = ManagerInternals(purge, db_filepath)
+    def __init__(self):
+        self._internals = ManagerInternals()
 
     def _sanitize_path(self, path):
         if path:
@@ -205,31 +194,22 @@ class Manager:
         else:
             return os.getcwd()
 
-    def _check_args(self, project=None, session=None):
-        if session and not project:
-            raise ManagerOptionsException("--project option should be defined when --session option is used")
-
     def up(self, path=None):
         return self._internals.up(self._sanitize_path(path))
 
     def down(self, path=None, project=None, session=None):
-        self._check_args(project, session)
         return self._internals.down(self._sanitize_path(path), project_name=project, session_name=session)
 
     def resume(self, path=None, project=None, session=None):
-        self._check_args(project, session)
         return self._internals.resume(self._sanitize_path(path), project_name=project, session_name=session)
 
     def pause(self, path=None, project=None, session=None):
-        self._check_args(project, session)
         return self._internals.pause(self._sanitize_path(path), project_name=project, session_name=session)
 
     def list(self, path=None, project=None, session=None):
-        self._check_args(project, session)
         return self._internals.list(self._sanitize_path(path), project_name=project, session_name=session)
 
     def flush(self, path=None, project=None, session=None):
-        self._check_args(project, session)
         return self._internals.flush(self._sanitize_path(path), project_name=project, session_name=session)
 
     def project_files(self, path):

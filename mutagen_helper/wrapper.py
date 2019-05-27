@@ -48,10 +48,10 @@ class MutagenListParser:
     def _is_separator_line(self, line):
         return line.startswith('-' * 10)
 
-    def parse(self, result):
-        if not result.stdout:
+    def parse(self, output, result=None):
+        if not output:
             return []
-        lines = result.stdout.splitlines()
+        lines = output.splitlines()
         if not self._is_separator_line(lines[0]):
             raise
         del lines[0]
@@ -314,7 +314,7 @@ class MutagenWrapper(ProcessWrapper):
                 return []
             raise
 
-        parsed = self.list_parser.parse(result)
+        parsed = self.list_parser.parse(result.stdout, result)
         return self._handle_result(result, parsed, one)
 
     def _handle_result(self, result, items, one):
