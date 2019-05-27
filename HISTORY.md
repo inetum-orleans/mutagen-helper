@@ -5,6 +5,7 @@ History
 ------------------
 
 - Add missing [expandvars](https://github.com/sayanarijit/expandvars) dependency
+- Remove [tinydb](https://github.com/msiemens/tinydb) dependency
 
 
 1.0.0b3 (2019-05-27)
