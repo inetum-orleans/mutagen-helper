@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0b4 (2019-05-27)
+--------------------
 
 - Add missing [expandvars](https://github.com/sayanarijit/expandvars) dependency
 - Remove [tinydb](https://github.com/msiemens/tinydb) dependency
