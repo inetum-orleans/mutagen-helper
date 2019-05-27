@@ -20,7 +20,9 @@ docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows "pip install --upgrade set
 
 release
 
-githubrelease release gfi-centre-ouest/mutagen-helper create $(python -m mutagen_helper --version | cut -d ' ' -f 3-) --publish "dist/*"
+RELEASE_VERSION=$(python -m mutagen_helper --version | cut -d ' ' -f 3-)
 
 postrelease
+
+githubrelease release gfi-centre-ouest/mutagen-helper create "$RELEASE_VERSION" --publish "dist/*"
 ```
