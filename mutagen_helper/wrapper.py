@@ -132,10 +132,15 @@ class ProcessWrapper:
                     break
 
         def listen_stdin(queue):
-            for line in sys.stdin.readline():
+            while True:
+                data = sys.stdin.read(1)
+                if data:
+                    queue.put((ProcessWrapper.STDIN, data.encode(sys.stdin.encoding)))
                 if process.poll() is not None:
+                    data = sys.stdin.read()
+                    if data:
+                        queue.put((ProcessWrapper.STDIN, data))
                     break
-                queue.put((ProcessWrapper.STDIN, line.encode(sys.stdin.encoding)))
 
         queue = Queue()
 
@@ -149,7 +154,7 @@ class ProcessWrapper:
 
         stdin_thread = Thread(target=listen_stdin, args=(queue,))
         stdin_thread.daemon = True
-        stdin_thread.start()
+        stdin_thread_started = False
 
         # read line without blocking
         stdout = b''
@@ -163,7 +168,8 @@ class ProcessWrapper:
             stream, data = (None, None)
             try:
                 stream, data = queue.get_nowait()
-                recorded.append((stream, data))
+                if stream == ProcessWrapper.STDERR or stream == ProcessWrapper.STDOUT:
+                    recorded.append((stream, data))
                 last_read_time = int(round(time.time() * 1000))
             except Empty:
                 if process.stdout.closed and process.stderr.closed:
@@ -178,8 +184,14 @@ class ProcessWrapper:
                         for stream, data in recorded:
                             if stream == ProcessWrapper.STDOUT:
                                 sys.stdout.buffer.write(data)
+                                sys.stdout.flush()
                             elif stream == ProcessWrapper.STDERR:
                                 sys.stderr.buffer.write(data)
+                                sys.stderr.flush()
+
+                        if not stdin_thread_started:
+                            stdin_thread_started = True
+                            stdin_thread.start()
                         recorded = []
                     continue
 
