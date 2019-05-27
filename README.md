@@ -107,7 +107,8 @@ Those command will create all mutagen sessions defined in `.mutagen.yml` of each
 Advanced configuration
 ----------------------
 
-You may use environment variable expansion, with `${VARIABLE}` syntax like in bash.
+You may use environment variable expansion, with `${VARIABLE}` syntax like in bash. Your can set a default value if 
+variable is not defined with `${VARIABLE:-default}`.
 
 Your may also define multiple sessions under a `sessions` key. Properties defined at root of the configuration file 
 will be inherited by each session.

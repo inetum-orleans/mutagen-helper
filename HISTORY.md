@@ -4,7 +4,7 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add optional support for environment expansion replacements using [expandvars](https://github.com/sayanarijit/expandvars) dependency.
 
 
 1.0.0b2 (2019-05-27)

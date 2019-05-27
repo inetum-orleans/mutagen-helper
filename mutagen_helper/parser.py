@@ -1,6 +1,7 @@
 import os
 
 import yaml
+from expandvars import expandvars
 
 
 class ProjectParser:
@@ -24,7 +25,7 @@ class ProjectParser:
         elif isinstance(data, list):
             return list(map(self.expandvars, data))
         elif isinstance(data, str):
-            return os.path.expandvars(data)
+            return expandvars(data.replace('\\', '\\\\'))
         return data
 
     def add_project_default_values(self, data, path=None):

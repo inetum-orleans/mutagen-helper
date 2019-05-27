@@ -13,6 +13,7 @@ flake8 = "*"
 [packages]
 click = "*"
 pyyaml = "*"
+expandvars = "*"
 
 [requires]
 python_version = "3.7"

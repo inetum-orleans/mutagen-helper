@@ -28,3 +28,12 @@ def test_parser_expandvars(parser: YamlProjectParser):
         pkg_resources.resource_filename(__name__, "data/test_parser_expandvars_expected.yml"))
 
     assert expandvars == expandvars_expected
+
+
+def test_parser_expandvars_with_defaults(parser: YamlProjectParser):
+    expandvars = parser.parse(
+        pkg_resources.resource_filename(__name__, "data/test_parser_expandvars_with_defaults.yml"))
+    expandvars_expected = parser.parse(
+        pkg_resources.resource_filename(__name__, "data/test_parser_expandvars_expected.yml"))
+
+    assert expandvars == expandvars_expected
