@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0b2 (2019-05-27)
+--------------------
 
 - Add `project` and `session` arguments to commands
 - Fix stuck sessions on `up` command because of invalid stdin/stdout support
