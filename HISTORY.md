@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0rc1 (2019-05-28)
+---------------------
 
 - Add support for many projects in the same configuration file
 - Add auto configuration support to create sessions from subdirectories with no configuration file
