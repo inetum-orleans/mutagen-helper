@@ -77,8 +77,9 @@ class ManagerInternals:
 
         return ret
 
-    def up(self, path):
-        return self._dispatch_project_files(path, self.up_handler, dispatch_session=True)
+    def up(self, path, project_name=None, session_name=None):
+        return self._dispatch_project_files(path, self.up_handler, dispatch_session=True, project_name=project_name,
+                                            session_name=session_name)
 
     def up_handler(self, project_name, session):
         name = session['name']
@@ -176,8 +177,8 @@ class Manager:
         else:
             return os.environ.get('MUTAGEN_HELPER_PATH', os.getcwd())
 
-    def up(self, path=None):
-        return self._internals.up(self._sanitize_path(path))
+    def up(self, path=None, project=None, session=None):
+        return self._internals.up(self._sanitize_path(path), project_name=project, session_name=session)
 
     def down(self, path=None, project=None, session=None):
         return self._internals.down(self._sanitize_path(path), project_name=project, session_name=session)

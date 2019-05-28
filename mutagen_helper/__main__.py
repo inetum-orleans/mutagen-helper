@@ -68,10 +68,12 @@ def main(verbose, silent):
 
 
 @main.command(help='Creates and starts a new synchronization sessions', help_priority=1)
+@click.argument('project', required=False)
+@click.argument('session', required=False)
 @click.option('-p', '--path', required=False)
-def up(path=None):
+def up(path=None, project=None, session=None):
     manager = Manager()
-    manager.up(path)
+    manager.up(path, project, session)
 
 
 @main.command(help='Permanently terminates synchronization sessions', help_priority=2)
