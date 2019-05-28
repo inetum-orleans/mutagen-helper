@@ -4,8 +4,8 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Use auto configure `include` and `exclude` when loading project configuration file
+- auto configure `include` now has priority over `exclude`
 
 1.0.0rc1 (2019-05-28)
 ---------------------
