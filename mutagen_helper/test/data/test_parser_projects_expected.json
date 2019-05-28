@@ -1,0 +1,89 @@
+[
+  {
+    "alpha": "test1",
+    "append_project_name_to_beta": true,
+    "beta": "beta1",
+    "configuration": "@TEST@",
+    "options": {
+      "default-directory-mode-beta": 775,
+      "default-file-mode-beta": 664,
+      "sync-mode": "two-way-resolved"
+    },
+    "path": "test1",
+    "project_name": "test1",
+    "sessions": [
+      {
+        "alpha": "test1",
+        "append_project_name_to_beta": true,
+        "beta": "beta1",
+        "configuration": "@TEST@",
+        "name": "0",
+        "options": {
+          "default-directory-mode-beta": 775,
+          "default-file-mode-beta": 664,
+          "sync-mode": "two-way-resolved"
+        },
+        "path": "test1",
+        "project_name": "test1"
+      }
+    ]
+  },
+  {
+    "alpha": "test2",
+    "append_project_name_to_beta": true,
+    "beta": "beta2",
+    "configuration": "@TEST@",
+    "options": {
+      "default-directory-mode-beta": 775,
+      "default-file-mode-beta": 664,
+      "sync-mode": "two-way-resolved"
+    },
+    "path": "test2",
+    "project_name": "test2",
+    "sessions": [
+      {
+        "alpha": "test2",
+        "append_project_name_to_beta": true,
+        "beta": "beta2",
+        "configuration": "@TEST@",
+        "name": "0",
+        "options": {
+          "default-directory-mode-beta": 775,
+          "default-file-mode-beta": 664,
+          "sync-mode": "two-way-resolved"
+        },
+        "path": "test2",
+        "project_name": "test2"
+      }
+    ]
+  },
+  {
+    "alpha": "test3",
+    "append_project_name_to_beta": true,
+    "beta": "beta3",
+    "configuration": "@TEST@",
+    "options": {
+      "default-directory-mode-beta": 700,
+      "default-file-mode-beta": 600,
+      "sync-mode": "two-way-resolved"
+    },
+    "path": "test3",
+    "project_name": "test3",
+    "sessions": [
+      {
+        "alpha": "test3",
+        "append_project_name_to_beta": true,
+        "beta": "beta3",
+        "configuration": "@TEST@",
+        "name": "0",
+        "options": {
+          "default-directory-mode-beta": 700,
+          "default-file-mode-beta": 600,
+          "sync-mode": "two-way-resolved"
+        },
+        "path": "test3",
+        "project_name": "test3"
+      }
+    ]
+  }
+]

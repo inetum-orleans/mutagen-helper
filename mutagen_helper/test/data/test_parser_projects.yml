@@ -1,0 +1,17 @@
+append_project_name_to_beta: true
+options:
+  sync-mode: two-way-resolved
+  default-file-mode-beta: 664
+  default-directory-mode-beta: 775
+projects:
+  - path: test1
+    beta: beta1
+  - path: test2
+    beta: beta2
+  - path: test3
+    beta: beta3
+    options:
+      sync-mode: two-way-resolved
+      default-file-mode-beta: 600
+      default-directory-mode-beta: 700
+

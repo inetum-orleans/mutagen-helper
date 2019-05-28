@@ -5,16 +5,24 @@ from expandvars import expandvars
 
 
 class ProjectParser:
-    def handle_inheritance(self, data):
-        if 'sessions' not in data:
+    def handle_project_inheritance(self, project):
+        if 'sessions' not in project:
             session = {}
-            data['sessions'] = [session]
-        for k, v in data.items():
+            project['sessions'] = [session]
+        for k, v in project.items():
             if k in ('sessions',):
                 continue
-            for session in data['sessions']:
+            for session in project['sessions']:
                 if k not in session:
                     session[k] = v
+
+    def handle_data_inheritance(self, data):
+        for k, v in data.items():
+            if k in ('projects',):
+                continue
+            for project in data['projects']:
+                if k not in project:
+                    project[k] = v
 
     def expandvars(self, data):
         if isinstance(data, dict):
@@ -29,30 +37,43 @@ class ProjectParser:
         return data
 
     def add_project_default_values(self, data, path=None):
-        if path and not data.get('project_name'):
-            data['project_name'] = os.path.basename(os.path.dirname(os.path.normpath(path)))
+        if path and not data.get('path'):
+            data['path'] = os.path.dirname(os.path.normpath(path))
+
+        if not data.get('project_name') and data.get('path'):
+            data['project_name'] = os.path.basename(data['path'])
 
         data['alpha'] = data.get('alpha',
-                                 os.environ.get('MUTAGEN_HELPER_ALPHA', os.path.dirname(path)))
+                                 os.environ.get('MUTAGEN_HELPER_ALPHA', data.get('path')))
         data['beta'] = data.get('beta', os.environ.get('MUTAGEN_HELPER_BETA'))
         data['append_project_name_to_beta'] = data.get('append_project_name_to_beta',
                                                        os.environ.get('MUTAGEN_HELPER_APPEND_PROJECT_NAME_TO_BETA',
                                                                       True))
 
-    def add_sessions_default_values(self, data):
+    def add_project_sessions_default_values(self, data):
         for i, session in enumerate(data['sessions']):
             session['name'] = session.get('name', str(i))
 
+    def parse_project(self, project: dict, path=None):
+        self.add_project_default_values(project, path=path)
+        self.handle_project_inheritance(project)
+        self.add_project_sessions_default_values(project)
+        project = self.expandvars(project)
+        return project
+
     def parse_data(self, data: dict, path=None):
-        self.add_project_default_values(data, path=path)
-        self.handle_inheritance(data)
-        self.add_sessions_default_values(data)
-        data = self.expandvars(data)
-        return data
+        if 'projects' in data:
+            data['configuration'] = path
+            self.handle_data_inheritance(data)
+            for project in data['projects']:
+                yield self.parse_project(project, path)
+        else:
+            data['configuration'] = path
+            yield self.parse_project(data, path)
 
 
 class YamlProjectParser(ProjectParser):
-    def parse(self, path: str):
-        with open(path, 'r') as stream:
+    def parse(self, configuration_filepath: str):
+        with open(configuration_filepath, 'r') as stream:
             data = yaml.safe_load(stream)
-            return self.parse_data(data, path)
+            return self.parse_data(data, configuration_filepath)

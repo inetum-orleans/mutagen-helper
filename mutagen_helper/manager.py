@@ -45,33 +45,34 @@ class ManagerInternals:
         for session_info in self.wrapper.list():
             betas[os.path.abspath(os.path.normpath(session_info['Beta']['URL']))] = session_info
 
-        for project_file in self.project_files(path):
-            project = self.project_parser.parse(project_file)
-            for project_session in project['sessions']:
-                betas[os.path.abspath(
-                    os.path.normpath(self._effective_beta(project_session, project['project_name'])))] = project_session
+        for project_file in self.configuration_files(path):
+            for project in self.project_parser.parse(project_file):
+                for project_session in project['sessions']:
+                    betas[os.path.abspath(
+                        os.path.normpath(
+                            self._effective_beta(project_session, project['project_name'])))] = project_session
 
         ret = []
-        for project_file in self.project_files(path):
+        for project_file in self.configuration_files(path):
             project_dirname = os.path.abspath(os.path.dirname(os.path.normpath((project_file))))
-            project = self.project_parser.parse(project_file)
-            if not project_name or project_name == project['project_name']:
-                if dispatch_session or session_name:
-                    for project_session in project['sessions']:
-                        if not session_name or session_name == project_session['name']:
-                            beta_counterpart = betas.get(project_dirname)
-                            if beta_counterpart:
-                                logging.debug("Skip file %s because it match beta of session %s (%s)." % (
-                                    project_file, beta_counterpart['project_name'], beta_counterpart['name']))
-                                continue
-                            dispatcher_ret = dispatcher_function(project['project_name'], project_session,
-                                                                 *args, **kwargs)
-                            if dispatcher_ret is not None:
-                                ret.append(dispatcher_ret)
-                else:
-                    dispatcher_ret = dispatcher_function(project['project_name'], *args, **kwargs)
-                    if dispatcher_ret:
-                        ret.extend(dispatcher_ret)
+            for project in self.project_parser.parse(project_file):
+                if not project_name or project_name == project['project_name']:
+                    if dispatch_session or session_name:
+                        for project_session in project['sessions']:
+                            if not session_name or session_name == project_session['name']:
+                                beta_counterpart = betas.get(project_dirname)
+                                if beta_counterpart:
+                                    logging.debug("Skip file %s because it match beta of session %s (%s)." % (
+                                        project_file, beta_counterpart['project_name'], beta_counterpart['name']))
+                                    continue
+                                dispatcher_ret = dispatcher_function(project['project_name'], project_session,
+                                                                     *args, **kwargs)
+                                if dispatcher_ret is not None:
+                                    ret.append(dispatcher_ret)
+                    else:
+                        dispatcher_ret = dispatcher_function(project['project_name'], *args, **kwargs)
+                        if dispatcher_ret:
+                            ret.extend(dispatcher_ret)
 
         return ret
 
@@ -145,7 +146,7 @@ class ManagerInternals:
         logging.info('Session %s (%s) resumed.' % (project_name, session_id))
         return session_id
 
-    def project_file(self, path):
+    def configuration_file(self, path):
         candidates = ['mutagen.yml', 'mutagen.yaml', '.mutagen.yml', '.mutagen.yaml']
         for candidate in candidates:
             candidate_path = os.path.join(path, candidate)
@@ -163,21 +164,24 @@ class ManagerInternals:
             long=long,
             one=True)
         if mutagen_session:
-            mutagen_session['Project name'] = project_name
-            mutagen_session['Name'] = session['name']
+            mutagen_session['Mutagen Helper'] = {
+                'Project name': project_name,
+                'Session name': session.get('name'),
+                'Configuration file': session.get('configuration')
+            }
 
         return mutagen_session
 
-    def project_files(self, path):
+    def configuration_files(self, path):
         if os.path.isdir(path):
-            group_file = self.project_file(path)
+            group_file = self.configuration_file(path)
             if group_file:
                 yield group_file
             else:
                 for item in os.listdir(path):
                     child_path = os.path.join(path, item)
                     if os.path.isdir(os.path.join(path, child_path)):
-                        child_project_file = self.project_file(child_path)
+                        child_project_file = self.configuration_file(child_path)
                         if child_project_file:
                             yield child_project_file
         elif os.path.isfile(path):
@@ -215,7 +219,7 @@ class Manager:
         return self._internals.flush(self._sanitize_path(path), project_name=project, session_name=session)
 
     def project_files(self, path):
-        return self._internals.project_files(self._sanitize_path(path))
+        return self._internals.configuration_files(self._sanitize_path(path))
 
     def project_file(self, path):
-        return self._internals.project_file(self._sanitize_path(path))
+        return self._internals.configuration_file(self._sanitize_path(path))

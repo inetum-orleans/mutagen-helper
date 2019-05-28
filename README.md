@@ -116,7 +116,7 @@ will be inherited by each session.
 You may also give names to sessions for them to be identified with precision, but keep in mind that changing name
 on running sessions could cause problem as they are used to find out the real mutagen session id.
 
-```
+```yaml
 beta: '${DOCKER_DEVBOX_URL}:/home/vagrant/projects'
 sessions:
   - options:
@@ -138,6 +138,27 @@ sessions:
       max-staging-file-size: 1MB
       watch-mode: no-watch
 ```
+
+It's possible to define a configuration file for multiple projects with `projects` key. It also supports using the same 
+inheritance mechanism as with `sessions`.
+
+```yaml
+options:
+  sync-mode: two-way-resolved
+  default-file-mode-beta: 664
+  default-directory-mode-beta: 775
+beta: 'vagrant@192.168.1.100:/home/vagrant/projects'
+projects:
+  - path: C:\workspace\project1
+  - path: C:\workspace\project2
+  - path: C:\workspace\project3
+    beta: beta: 'vagrant@192.168.1.100:/home/vagrant/projects'
+    options:
+      sync-mode: two-way-resolved
+      default-file-mode-beta: 600
+      default-directory-mode-beta: 700
+```
+
 
 Some properties have default values.
 
