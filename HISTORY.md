@@ -1,8 +1,8 @@
 History
 =======
 
-1.0.0 (unreleased)
-------------------
+1.0.0rc3 (2019-05-28)
+---------------------
 
 - Add project and session optional arguments to `up` command
 
