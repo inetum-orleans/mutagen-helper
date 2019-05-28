@@ -1,0 +1,3 @@
+auto_configure:
+  ignore_project_configuration: True
+beta: beta_auto

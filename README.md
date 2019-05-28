@@ -190,6 +190,7 @@ auto_configure:
     - '*-dev2*'
   exclude:
     - '*-stage'
+  ignore_project_configuration: True
 options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 655
@@ -197,6 +198,9 @@ options:
 ``` 
 
 You can set `include` and `exclude` to disable auto_configure feature for some sub-directories.
+
+By default, if a configuration file is present in a project directory, it will still be used to create the project, 
+but your can set `ignore_project_configuration` to let auto configuration create the session.
 
 Environment variables and default values
 ----------------------------------------

@@ -1,0 +1,4 @@
+auto_configure:
+  exclude: ['test1', 'test4']
+  ignore_project_configuration: ['test5']
+beta: beta_auto

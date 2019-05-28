@@ -29,16 +29,22 @@ def configuration_files(path):
         yield path
 
 
-def _path_matches(item, include, exclude):
+def _path_matches(item, include=None, exclude=None):
     if exclude:
-        for exclude_item in exclude:
-            if fnmatch.fnmatch(item, exclude_item):
-                return False
+        if isinstance(exclude, bool):
+            return not exclude
+        else:
+            for exclude_item in exclude:
+                if fnmatch.fnmatch(item, exclude_item):
+                    return False
     if include:
-        for include_item in include:
-            if fnmatch.fnmatch(item, include_item):
-                return True
-        return False
+        if isinstance(include, bool):
+            return True
+        else:
+            for include_item in include:
+                if fnmatch.fnmatch(item, include_item):
+                    return True
+            return False
     return True
 
 
@@ -47,9 +53,9 @@ def auto_configure(path, auto=True, parser: ProjectParser = None):
         path = os.path.dirname(path)
 
     if isinstance(auto, bool):
-        auto = {'enabled': auto, 'include': None, 'exclude': None}
+        auto = {'enabled': auto, 'include': None, 'exclude': None, 'ignore_project_configuration': False}
 
-    if auto['enabled']:
+    if auto.get('enabled', True):
         if auto.get('exclude') and not isinstance(auto.get('exclude'), list):
             auto['exclude'] = [auto.get('exclude')]
 
@@ -61,7 +67,8 @@ def auto_configure(path, auto=True, parser: ProjectParser = None):
             if os.path.isdir(child_path):
                 child_fullpath = os.path.join(path, child_path)
                 child_project_file = configuration_file(child_fullpath)
-                if child_project_file and parser:
+                if child_project_file and parser and \
+                        _path_matches(item, exclude=auto.get('ignore_project_configuration')):
                     for project in parser.parse(child_project_file):
                         yield project
                 else:
