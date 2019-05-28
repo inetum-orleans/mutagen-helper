@@ -62,8 +62,6 @@ def test_up_and_down(manager: Manager, cwd_path: str):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'test4')
 
-    os.chdir(cwd_path)
-
     os.mkdir(path1)
     os.mkdir(path2)
     os.mkdir(path3)
@@ -99,8 +97,6 @@ def test_up_and_down_with_project_and_session_name(manager: Manager, cwd_path: s
     path2 = os.path.join(cwd_path, 'test2')
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'test4')
-
-    os.chdir(cwd_path)
 
     os.mkdir(path1)
     os.mkdir(path2)
@@ -148,8 +144,6 @@ def test_up_twice_and_down_twice(manager: Manager, cwd_path: str):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'test4')
 
-    os.chdir(cwd_path)
-
     os.mkdir(path1)
     os.mkdir(path2)
     os.mkdir(path3)
@@ -191,8 +185,6 @@ def test_up_and_down_with_resume_pause_flush(manager: Manager, cwd_path: str):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'test4')
 
-    os.chdir(cwd_path)
-
     os.mkdir(path1)
     os.mkdir(path2)
     os.mkdir(path3)
@@ -232,8 +224,6 @@ def test_auto_configure(manager: Manager, cwd_path: str):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(cwd_path, 'test4')
     path5 = os.path.join(cwd_path, 'test5')
-
-    os.chdir(cwd_path)
 
     os.mkdir(path1)
     os.mkdir(path2)

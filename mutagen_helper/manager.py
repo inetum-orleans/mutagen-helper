@@ -174,7 +174,7 @@ class Manager:
         if path:
             return path
         else:
-            return os.getcwd()
+            return os.environ.get('MUTAGEN_HELPER_PATH', os.getcwd())
 
     def up(self, path=None):
         return self._internals.up(self._sanitize_path(path))

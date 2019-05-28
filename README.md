@@ -198,10 +198,10 @@ options:
 
 You can set `include` and `exclude` to disable auto_configure feature for some sub-directories.
 
-Properties default values
--------------------------
+Environment variables and default values
+----------------------------------------
 
-Some properties have default values.
+Some properties have default values, based on environment variables if defined.
 
   - `alpha`
     - `MUTAGEN_HELPER_ALPHA` environment variable, *or*
@@ -212,3 +212,6 @@ Some properties have default values.
   - `append_project_name_to_beta`: 
     - `MUTAGEN_HELPER_APPEND_PROJECT_NAME_TO_BETA`, *or*
     -  `True`
+
+`MUTAGEN_HELPER_PATH` environment variable can be set to a path to make mutagen-helper load 
+configuration from this path by default instead of current working directory. (`--path` option can still be used)

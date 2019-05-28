@@ -29,8 +29,6 @@ def test_auto_default(cwd_path: str, parser: ProjectParser):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'test4')
 
-    os.chdir(cwd_path)
-
     os.mkdir(path1)
     os.mkdir(path2)
     os.mkdir(path3)
@@ -53,8 +51,6 @@ def test_auto_includes(cwd_path: str):
     path3 = os.path.join(cwd_path, 'test3')
     path4 = os.path.join(path3, 'include4')
 
-    os.chdir(cwd_path)
-
     os.mkdir(path1)
     os.mkdir(path2)
     os.mkdir(path3)
@@ -74,8 +70,6 @@ def test_auto_excludes(cwd_path: str):
     path2 = os.path.join(cwd_path, 'exclude2')
     path3 = os.path.join(cwd_path, 'exclude3')
     path4 = os.path.join(path3, 'test4')
-
-    os.chdir(cwd_path)
 
     os.mkdir(path1)
     os.mkdir(path2)
