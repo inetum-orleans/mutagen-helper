@@ -210,7 +210,7 @@ options:
   default-directory-mode-beta: 755
 ``` 
 
-this will create a synchronisation project for `project-dev1` and `project-dev2` (`exclude` has priority other `include`).
+this will create a synchronisation project for `project-dev1` and `project-dev2` (`include` has priority other `exclude`).
 
 By default, if a configuration file is present in a project directory, it is still used to create the 
 synchronisation project. You can ignore those configuration files with `ignore_project_configuration` to let auto 

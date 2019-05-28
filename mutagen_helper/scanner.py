@@ -30,13 +30,6 @@ def configuration_files(path):
 
 
 def _path_matches(item, include=None, exclude=None):
-    if exclude:
-        if isinstance(exclude, bool):
-            return not exclude
-        else:
-            for exclude_item in exclude:
-                if fnmatch.fnmatch(item, exclude_item):
-                    return False
     if include:
         if isinstance(include, bool):
             return True
@@ -45,6 +38,13 @@ def _path_matches(item, include=None, exclude=None):
                 if fnmatch.fnmatch(item, include_item):
                     return True
             return False
+    if exclude:
+        if isinstance(exclude, bool):
+            return not exclude
+        else:
+            for exclude_item in exclude:
+                if fnmatch.fnmatch(item, exclude_item):
+                    return False
     return True
 
 
