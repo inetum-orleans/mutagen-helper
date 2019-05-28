@@ -2,7 +2,8 @@ import copy
 import logging
 import os
 
-from .parser import YamlProjectParser
+from mutagen_helper import scanner
+from .parser import ProjectParser
 from .wrapper import MutagenWrapper
 
 db_filepath = os.path.join(
@@ -11,7 +12,7 @@ db_filepath = os.path.join(
 
 class ManagerInternals:
     def __init__(self):
-        self.project_parser = YamlProjectParser()
+        self.project_parser = ProjectParser()
         self.wrapper = MutagenWrapper()
 
     def _effective_beta(self, session, project_name):
@@ -45,7 +46,7 @@ class ManagerInternals:
         for session_info in self.wrapper.list():
             betas[os.path.abspath(os.path.normpath(session_info['Beta']['URL']))] = session_info
 
-        for project_file in self.configuration_files(path):
+        for project_file in scanner.configuration_files(path):
             for project in self.project_parser.parse(project_file):
                 for project_session in project['sessions']:
                     betas[os.path.abspath(
@@ -53,7 +54,7 @@ class ManagerInternals:
                             self._effective_beta(project_session, project['project_name'])))] = project_session
 
         ret = []
-        for project_file in self.configuration_files(path):
+        for project_file in scanner.configuration_files(path):
             project_dirname = os.path.abspath(os.path.dirname(os.path.normpath((project_file))))
             for project in self.project_parser.parse(project_file):
                 if not project_name or project_name == project['project_name']:
@@ -146,14 +147,6 @@ class ManagerInternals:
         logging.info('Session %s (%s) resumed.' % (project_name, session_id))
         return session_id
 
-    def configuration_file(self, path):
-        candidates = ['mutagen.yml', 'mutagen.yaml', '.mutagen.yml', '.mutagen.yaml']
-        for candidate in candidates:
-            candidate_path = os.path.join(path, candidate)
-            if os.path.isfile(os.path.join(path, candidate)):
-                return candidate_path
-        return
-
     def list(self, path, project_name=None, session_name=None, long=False):
         return self._dispatch_project_files(path, self.list_handler, dispatch_session=True, project_name=project_name,
                                             session_name=session_name, long=long)
@@ -171,23 +164,6 @@ class ManagerInternals:
             }
 
         return mutagen_session
-
-    def configuration_files(self, path):
-        if os.path.isdir(path):
-            group_file = self.configuration_file(path)
-            if group_file:
-                yield group_file
-            else:
-                for item in os.listdir(path):
-                    child_path = os.path.join(path, item)
-                    if os.path.isdir(os.path.join(path, child_path)):
-                        child_project_file = self.configuration_file(child_path)
-                        if child_project_file:
-                            yield child_project_file
-        elif os.path.isfile(path):
-            yield path
-        else:
-            raise
 
 
 class Manager:
@@ -219,7 +195,7 @@ class Manager:
         return self._internals.flush(self._sanitize_path(path), project_name=project, session_name=session)
 
     def project_files(self, path):
-        return self._internals.configuration_files(self._sanitize_path(path))
+        return scanner.configuration_files(self._sanitize_path(path))
 
     def project_file(self, path):
-        return self._internals.configuration_file(self._sanitize_path(path))
+        return scanner.configuration_file(self._sanitize_path(path))

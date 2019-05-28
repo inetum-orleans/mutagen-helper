@@ -224,3 +224,60 @@ def test_up_and_down_with_resume_pause_flush(manager: Manager, cwd_path: str):
 
     lst = manager.list(cwd_path)
     assert len(lst) == 0
+
+
+def test_auto_configure(manager: Manager, cwd_path: str):
+    path1 = os.path.join(cwd_path, 'test1')
+    path2 = os.path.join(cwd_path, 'test2')
+    path3 = os.path.join(cwd_path, 'test3')
+    path4 = os.path.join(cwd_path, 'test4')
+    path5 = os.path.join(cwd_path, 'test5')
+
+    os.chdir(cwd_path)
+
+    os.mkdir(path1)
+    os.mkdir(path2)
+    os.mkdir(path3)
+    os.mkdir(path4)
+    os.mkdir(path5)
+
+    mutagen1 = os.path.join(path1, '.mutagen.yml')
+    mutagen2 = os.path.join(path3, 'mutagen.yaml')
+    mutagen_auto = os.path.join(cwd_path, 'mutagen.yaml')
+
+    with open(mutagen1, 'wb') as f:
+        f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
+
+    with open(mutagen2, 'wb') as f:
+        f.write(pkg_resources.resource_string(__name__, "data/test3.yml"))
+
+    with open(mutagen_auto, 'wb') as f:
+        f.write(pkg_resources.resource_string(__name__, "data/test_auto.yml"))
+
+    manager._internals.wrapper.terminate()
+
+    handled_sessions = manager.up(cwd_path)
+    assert len(handled_sessions) == 5
+
+    manager.flush(cwd_path)
+
+    lst = manager.list(cwd_path)
+    assert len(lst) == 5
+    project_names = list(map(lambda item: item['Mutagen Helper']['Project name'], lst))
+    betas = list(map(lambda item: item['Beta']['URL'], lst))
+
+    assert project_names == ['test1', 'test2', 'test3', 'test4', 'test5']
+
+    assert betas[0].endswith(os.path.join('beta1', 'test1'))
+    assert betas[1].endswith(os.path.join('beta_auto', 'test2'))
+    assert betas[2].endswith(os.path.join('beta3'))
+    assert betas[3].endswith(os.path.join('beta_auto', 'test4'))
+    assert betas[4].endswith(os.path.join('beta_auto', 'test5'))
+
+    manager.pause(cwd_path)
+    manager.resume(cwd_path)
+
+    manager.down(cwd_path)
+
+    lst = manager.list(cwd_path)
+    assert len(lst) == 0

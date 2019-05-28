@@ -160,6 +160,47 @@ projects:
 ```
 
 
+Automatic configuration
+-----------------------
+
+You can automate the configuration of a directory containing many project by created a `.mutagen.yml` file inside
+the parent of those directories.
+
+```yaml
+auto_configure: True
+``` 
+
+```text
+C:\workspace
+    |- .mutagen.yml
+    |- project-dev1
+        |- ...
+    |- project-dev2
+        |- ...
+    |- project-dev3-stage
+        |- ...
+```
+
+This will create sessions for all `project1`, `project2` and `project3`
+
+```yaml
+auto_configure: 
+  enabled: True
+  include: 
+    - '*-dev2*'
+  exclude:
+    - '*-stage'
+options:
+  sync-mode: two-way-resolved
+  default-file-mode-beta: 655
+  default-directory-mode-beta: 755
+``` 
+
+You can set `include` and `exclude` to disable auto_configure feature for some sub-directories.
+
+Properties default values
+-------------------------
+
 Some properties have default values.
 
   - `alpha`

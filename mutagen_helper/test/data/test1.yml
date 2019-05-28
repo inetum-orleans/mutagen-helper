@@ -9,4 +9,3 @@ options:
   ignore:
     - node_modules
     - vendor
-full_sync: true

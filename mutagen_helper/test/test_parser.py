@@ -4,12 +4,12 @@ import os
 import pkg_resources
 import pytest
 
-from mutagen_helper.parser import YamlProjectParser
+from mutagen_helper.parser import ProjectParser
 
 
 @pytest.fixture
 def parser():
-    return YamlProjectParser()
+    return ProjectParser()
 
 
 def _remove_path_related_keys(data, key=None):
@@ -24,7 +24,7 @@ def _remove_path_related_keys(data, key=None):
     return data
 
 
-def test_parser_with_and_without_sessions(parser: YamlProjectParser):
+def test_parser_with_and_without_sessions(parser: ProjectParser):
     with_sessions = next(parser.parse(pkg_resources.resource_filename(__name__, "data/test_parser_with_sessions.yml")))
     without_sessions = next(
         parser.parse(pkg_resources.resource_filename(__name__, "data/test_parser_without_sessions.yml")))
@@ -33,7 +33,7 @@ def test_parser_with_and_without_sessions(parser: YamlProjectParser):
         without_sessions['sessions'])
 
 
-def test_parser_expandvars(parser: YamlProjectParser):
+def test_parser_expandvars(parser: ProjectParser):
     os.environ['ALPHA'] = 'alpha'
     os.environ['BETA'] = 'beta'
 
@@ -44,7 +44,7 @@ def test_parser_expandvars(parser: YamlProjectParser):
     assert _remove_path_related_keys(expandvars) == _remove_path_related_keys(expandvars_expected)
 
 
-def test_parser_projects(parser: YamlProjectParser):
+def test_parser_projects(parser: ProjectParser):
     projects = list(parser.parse(
         pkg_resources.resource_filename(__name__, "data/test_parser_projects.yml")))
 

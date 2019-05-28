@@ -3,6 +3,8 @@ import os
 import yaml
 from expandvars import expandvars
 
+from mutagen_helper import scanner
+
 
 class ProjectParser:
     def handle_project_inheritance(self, project):
@@ -10,7 +12,7 @@ class ProjectParser:
             session = {}
             project['sessions'] = [session]
         for k, v in project.items():
-            if k in ('sessions',):
+            if k in ('sessions', 'auto_configure'):
                 continue
             for session in project['sessions']:
                 if k not in session:
@@ -18,7 +20,7 @@ class ProjectParser:
 
     def handle_data_inheritance(self, data):
         for k, v in data.items():
-            if k in ('projects',):
+            if k in ('projects', 'auto_configure'):
                 continue
             for project in data['projects']:
                 if k not in project:
@@ -62,6 +64,17 @@ class ProjectParser:
         return project
 
     def parse_data(self, data: dict, path=None):
+        if data.get('auto_configure'):
+            auto_configured_projects = list(scanner.auto_configure(path, data.get('auto_configure'), self))
+            if auto_configured_projects:
+                if 'projects' not in data:
+                    data['projects'] = []
+                else:
+                    tmp_auto_configure = data.pop('auto_configure')
+                    data['projects'] = [data]
+                    data['auto_configure'] = tmp_auto_configure
+                data['projects'].extend(auto_configured_projects)
+
         if 'projects' in data:
             data['configuration'] = path
             self.handle_data_inheritance(data)
@@ -71,9 +84,7 @@ class ProjectParser:
             data['configuration'] = path
             yield self.parse_project(data, path)
 
-
-class YamlProjectParser(ProjectParser):
     def parse(self, configuration_filepath: str):
         with open(configuration_filepath, 'r') as stream:
             data = yaml.safe_load(stream)
-            return self.parse_data(data, configuration_filepath)
+        return self.parse_data(data, configuration_filepath)
