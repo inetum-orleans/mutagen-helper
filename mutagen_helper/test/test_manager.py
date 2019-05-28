@@ -354,21 +354,18 @@ def test_auto_configure_advanced(manager: Manager, cwd_path: str):
     manager._internals.wrapper.terminate()
 
     handled_sessions = manager.up(cwd_path)
-    assert len(handled_sessions) == 4
-
-    manager.flush(cwd_path)
+    assert len(handled_sessions) == 3
 
     lst = manager.list(cwd_path)
-    assert len(lst) == 4
+    assert len(lst) == 3
     project_names = list(map(lambda item: item['Mutagen Helper']['Project name'], lst))
     betas = list(map(lambda item: item['Beta']['URL'], lst))
 
-    assert project_names == ['test1', 'test2', 'test3', 'test5']
+    assert project_names == ['test2', 'test3', 'test5']
 
-    assert betas[0].endswith(os.path.join('beta1', 'test1'))
-    assert betas[1].endswith(os.path.join('beta_auto', 'test2'))
-    assert betas[2].endswith(os.path.join('beta3'))
-    assert betas[3].endswith(os.path.join('beta_auto', 'test5'))
+    assert betas[0].endswith(os.path.join('beta_auto', 'test2'))
+    assert betas[1].endswith(os.path.join('beta3'))
+    assert betas[2].endswith(os.path.join('beta_auto', 'test5'))
 
     manager.pause(cwd_path)
     manager.resume(cwd_path)
