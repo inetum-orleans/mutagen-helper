@@ -68,7 +68,8 @@ def auto_configure(path, auto=True, parser: ProjectParser = None):
                 child_fullpath = os.path.join(path, child_path)
                 child_project_file = configuration_file(child_fullpath)
                 if child_project_file and parser and \
-                        _path_matches(item, exclude=auto.get('ignore_project_configuration')):
+                        _path_matches(item, exclude=auto.get('ignore_project_configuration'))\
+                        and _path_matches(item, auto.get('include'), auto.get('exclude')):
                     for project in parser.parse(child_project_file):
                         yield project
                 else:
