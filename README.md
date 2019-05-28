@@ -7,7 +7,8 @@ Mutagen Helper
 [![Coveralls](http://img.shields.io/coveralls/gfi-centre-ouest/mutagen-helper.svg)](https://coveralls.io/github/gfi-centre-ouest/mutagen-helper?branch=develop)
 
 Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisation sessions inside a configuration file 
-on directories you want to synchronise.
+on directories you want to synchronise. Created sessions are marked with a session name and a project name that makes
+them easier to manage.
 
 Install
 -------
@@ -40,13 +41,14 @@ options: # Options can be provided
     - vendor/
 ```
 
-*important note: mutagen-helper automatically appends the `project_name` to the beta definition. It means that this
-directory will be synchronised to /home/vagrant/projects/helper-project*.
+Mutagen Helper appends the `project_name` to the beta URL. It means that this
+directory will be synchronised to `/home/vagrant/projects/helper-project`.
 
 - Run `mutagen-helper up` from the project directory.
 
-- Run `mutagen-helper list` to see which sessions are running on which projects. Output match `mutagen list` command
-output, but as JSON and with `Project name` and `Name` additional properties.
+- Run `mutagen-helper list` to see which sessions are running. Output of this command match `mutagen list` output, 
+but as JSON and with additional synchronisation helper properties like `Project name`, `Session name` and 
+`Configuration file`.
 
 - Run `mutagen-helper --help` to check other available commands.
 
@@ -102,6 +104,13 @@ cd C:\workspace
 mutagen-helper up
 ```
 
+or 
+
+```bash
+export MUTAGEN_HELPER_PATH=C:\workspace
+mutagen-helper up
+```
+
 Those command will create all mutagen sessions defined in `.mutagen.yml` of each subdirectories of `C:\workspace`.
 
 Advanced configuration
@@ -139,15 +148,15 @@ sessions:
       watch-mode: no-watch
 ```
 
-It's possible to define a configuration file for multiple projects with `projects` key. It also supports using the same 
+It's possible to define a single configuration file for multiple projects with `projects` key. It supports the same 
 inheritance mechanism as with `sessions`.
 
 ```yaml
+beta: 'vagrant@192.168.1.100:/home/vagrant/projects'
 options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 664
   default-directory-mode-beta: 775
-beta: 'vagrant@192.168.1.100:/home/vagrant/projects'
 projects:
   - path: C:\workspace\project1
   - path: C:\workspace\project2
@@ -163,8 +172,8 @@ projects:
 Automatic configuration
 -----------------------
 
-You can automate the configuration of a directory containing many project by created a `.mutagen.yml` file inside
-the parent of those directories.
+You can automate the configuration of a directory containing many project. Create a `.mutagen.yml` file inside
+the parent of those directories, and set `auto_configure`.
 
 ```yaml
 auto_configure: True
@@ -172,35 +181,49 @@ auto_configure: True
 
 ```text
 C:\workspace
-    |- .mutagen.yml
-    |- project-dev1
+    |- .mutagen.yml  # Auto configure YAML file
+    |- project-dev1  # Projects without any mutagen-helper configuration file
         |- ...
     |- project-dev2
         |- ...
-    |- project-dev3-stage
+    |- project-dev2-stage
+        |- ...
+    |- project-prod1
         |- ...
 ```
 
-This will create sessions for all `project1`, `project2` and `project3`
+This will create synchronisation projects for each subdirectory (`project-dev1`, `project-dev2`, `project-dev2-stage` and 
+`project-prod1`).
+
+You can set `include` and `exclude` to disable auto configure feature for some subdirectories only, and other property
+you can normally use on `projects` and `sessions`
 
 ```yaml
 auto_configure: 
-  enabled: True
   include: 
-    - '*-dev2*'
+    - '*-dev*'
   exclude:
     - '*-stage'
-  ignore_project_configuration: True
 options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 655
   default-directory-mode-beta: 755
 ``` 
 
-You can set `include` and `exclude` to disable auto_configure feature for some sub-directories.
+this will create a synchronisation project for `project-dev1` and `project-dev2` (`exclude` has priority other `include`).
 
-By default, if a configuration file is present in a project directory, it will still be used to create the project, 
-but your can set `ignore_project_configuration` to let auto configuration create the session.
+By default, if a configuration file is present in a project directory, it is still used to create the 
+synchronisation project. You can ignore those configuration files with `ignore_project_configuration` to let auto 
+configure create the synchronisation project on his own.
+
+```yaml
+auto_configure: 
+  ignore_project_configuration: True  # It can also be a list of glob for project names to ignore
+options:
+  sync-mode: two-way-resolved
+  default-file-mode-beta: 655
+  default-directory-mode-beta: 755
+```
 
 Environment variables and default values
 ----------------------------------------

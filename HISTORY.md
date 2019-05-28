@@ -4,8 +4,9 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for many projects in the same configuration file
+- Add auto configuration support to create sessions from subdirectories with no configuration file
+- Add `MUTAGEN_HELPER_PATH` environment variable
 
 1.0.0b4 (2019-05-27)
 --------------------
