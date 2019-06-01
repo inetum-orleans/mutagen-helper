@@ -253,13 +253,14 @@ def test_auto_configure(manager: Manager, cwd_path: str):
     project_names = list(map(lambda item: item['Mutagen Helper']['Project name'], lst))
     betas = list(map(lambda item: item['Beta']['URL'], lst))
 
-    assert project_names == ['test1', 'test2', 'test3', 'test4', 'test5']
+    assert len(project_names) == 5
+    assert set(project_names) == {'test1', 'test2', 'test3', 'test4', 'test5'}
 
-    assert betas[0].endswith(os.path.join('beta1', 'test1'))
-    assert betas[1].endswith(os.path.join('beta_auto', 'test2'))
-    assert betas[2].endswith(os.path.join('beta3'))
-    assert betas[3].endswith(os.path.join('beta_auto', 'test4'))
-    assert betas[4].endswith(os.path.join('beta5', 'test5'))
+    assert any(beta.endswith(os.path.join('beta1', 'test1')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test2')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta3')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test4')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta5', 'test5')) for beta in betas)
 
     manager.down(cwd_path)
 
@@ -307,13 +308,14 @@ def test_auto_configure_ignore_project_configuration(manager: Manager, cwd_path:
     project_names = list(map(lambda item: item['Mutagen Helper']['Project name'], lst))
     betas = list(map(lambda item: item['Beta']['URL'], lst))
 
-    assert project_names == ['test1', 'test2', 'test3', 'test4', 'test5']
+    assert len(project_names) == 5
+    assert set(project_names) == {'test1', 'test2', 'test3', 'test4', 'test5'}
 
-    assert betas[0].endswith(os.path.join('beta_auto', 'test1'))
-    assert betas[1].endswith(os.path.join('beta_auto', 'test2'))
-    assert betas[2].endswith(os.path.join('beta_auto', 'test3'))
-    assert betas[3].endswith(os.path.join('beta_auto', 'test4'))
-    assert betas[4].endswith(os.path.join('beta_auto', 'test5'))
+    assert any(beta.endswith(os.path.join('beta_auto', 'test1')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test2')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test3')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test4')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test5')) for beta in betas)
 
     manager.down(cwd_path)
 
@@ -361,11 +363,12 @@ def test_auto_configure_advanced(manager: Manager, cwd_path: str):
     project_names = list(map(lambda item: item['Mutagen Helper']['Project name'], lst))
     betas = list(map(lambda item: item['Beta']['URL'], lst))
 
-    assert project_names == ['test2', 'test3', 'test5']
+    assert len(project_names) == 3
+    assert set(project_names) == {'test2', 'test5', 'test3'}
 
-    assert betas[0].endswith(os.path.join('beta_auto', 'test2'))
-    assert betas[1].endswith(os.path.join('beta3'))
-    assert betas[2].endswith(os.path.join('beta_auto', 'test5'))
+    assert any(beta.endswith(os.path.join('beta_auto', 'test2')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta3')) for beta in betas)
+    assert any(beta.endswith(os.path.join('beta_auto', 'test5')) for beta in betas)
 
     manager.pause(cwd_path)
     manager.resume(cwd_path)
