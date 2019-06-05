@@ -126,7 +126,7 @@ You may also give names to sessions for them to be identified with precision, bu
 on running sessions could cause problem as they are used to find out the real mutagen session id.
 
 ```yaml
-beta: '${DOCKER_DEVBOX_URL}:/home/vagrant/projects'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
 sessions:
   - options:
       name: 'partial-watch-alpha'
@@ -152,7 +152,7 @@ It's possible to define a single configuration file for multiple projects with `
 inheritance mechanism as with `sessions`.
 
 ```yaml
-beta: 'vagrant@192.168.1.100:/home/vagrant/projects'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
 options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 664
@@ -199,14 +199,16 @@ You can set `include` and `exclude` to disable auto configure feature for some s
 you can normally use on `projects` and `sessions`
 
 ```yaml
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
 auto_configure: 
   include: 
     - '*-dev*'
   exclude:
     - '*-stage'
 options:
+  scan-mode: accelerated
   sync-mode: two-way-resolved
-  default-file-mode-beta: 655
+  default-file-mode-beta: 644
   default-directory-mode-beta: 755
 ``` 
 
@@ -217,11 +219,13 @@ synchronisation project. You can ignore those configuration files with `ignore_p
 configure create the synchronisation project on his own.
 
 ```yaml
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
 auto_configure: 
   ignore_project_configuration: True  # It can also be a list of glob for project names to ignore
 options:
+  scan-mode: accelerated
   sync-mode: two-way-resolved
-  default-file-mode-beta: 655
+  default-file-mode-beta: 644
   default-directory-mode-beta: 755
 ```
 
