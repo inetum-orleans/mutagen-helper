@@ -30,11 +30,13 @@ destination of the synchronisation.
 
 ```yaml
 project_name: 'helper-project' # Optional, it will fallback to directory name if not defined
-beta: 'vagrant@192.168.1.100:/home/vagrant/projects' # Beta side of the synchronisation
+beta: 'root@192.168.1.100:/home/vagrant/projects' # Beta side of the synchronisation
 options: # Options can be provided
   sync-mode: two-way-resolved
   default-file-mode-beta: 664
   default-directory-mode-beta: 775
+  default-owner-beta: vagrant
+  default-group-beta: vagrant
   ignore-vcs: True
   ignore:
     - node_modules/
@@ -126,13 +128,15 @@ You may also give names to sessions for them to be identified with precision, bu
 on running sessions could cause problem as they are used to find out the real mutagen session id.
 
 ```yaml
-beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-root@192.168.1.100:/home/vagrant/projects}'
 sessions:
   - options:
       name: 'partial-watch-alpha'
       sync-mode: two-way-resolved
       default-file-mode-beta: 664
       default-directory-mode-beta: 775
+      default-owner-beta: vagrant
+      default-group-beta: vagrant
       ignore-vcs: True
       ignore:
         - node_modules/
@@ -144,6 +148,8 @@ sessions:
       sync-mode: two-way-resolved
       default-file-mode-beta: 664
       default-directory-mode-beta: 775
+      default-owner-beta: vagrant
+      default-group-beta: vagrant
       max-staging-file-size: 1MB
       watch-mode: no-watch
 ```
@@ -152,11 +158,13 @@ It's possible to define a single configuration file for multiple projects with `
 inheritance mechanism as with `sessions`.
 
 ```yaml
-beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-root@192.168.1.100:/home/vagrant/projects}'
 options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 664
   default-directory-mode-beta: 775
+  default-owner-beta: vagrant
+  default-group-beta: vagrant
 projects:
   - path: C:\workspace\project1
   - path: C:\workspace\project2
@@ -199,7 +207,7 @@ You can set `include` and `exclude` to disable auto configure feature for some s
 you can normally use on `projects` and `sessions`
 
 ```yaml
-beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-root@192.168.1.100:/home/vagrant/projects}'
 auto_configure: 
   include: 
     - '*-dev*'
@@ -210,6 +218,8 @@ options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 644
   default-directory-mode-beta: 755
+  default-owner-beta: vagrant
+  default-group-beta: vagrant
 ``` 
 
 this will create a synchronisation project for `project-dev1` and `project-dev2` (`include` has priority other `exclude`).
@@ -219,7 +229,7 @@ synchronisation project. You can ignore those configuration files with `ignore_p
 configure create the synchronisation project on his own.
 
 ```yaml
-beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-vagrant@192.168.1.100:/home/vagrant/projects}'
+beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-root@192.168.1.100:/home/vagrant/projects}'
 auto_configure: 
   ignore_project_configuration: True  # It can also be a list of glob for project names to ignore
 options:
@@ -227,6 +237,8 @@ options:
   sync-mode: two-way-resolved
   default-file-mode-beta: 644
   default-directory-mode-beta: 755
+  default-owner-beta: vagrant
+  default-group-beta: vagrant
 ```
 
 Environment variables and default values
