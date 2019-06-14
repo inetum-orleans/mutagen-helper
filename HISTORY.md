@@ -4,7 +4,8 @@ History
 1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix session being creating on root directory when `auto_configure` is enabled and no project is found (show an error 
+message to the user)
 
 
 1.0.0rc3 (2019-05-28)

@@ -1,7 +1,17 @@
 import fnmatch
 import os
 
+from click import ClickException
+
 from mutagen_helper.parser import ProjectParser
+
+
+class ScannerException(ClickException):
+    pass
+
+
+class AutoConfigureNoProject(ScannerException):
+    pass
 
 
 def configuration_file(path):
@@ -62,16 +72,22 @@ def auto_configure(path, auto=True, parser: ProjectParser = None):
         if auto.get('include') and not isinstance(auto.get('include'), list):
             auto['include'] = [auto.get('include')]
 
+        match_project = False
         for item in os.listdir(path):
             child_path = os.path.join(path, item)
             if os.path.isdir(child_path):
                 child_fullpath = os.path.join(path, child_path)
                 child_project_file = configuration_file(child_fullpath)
                 if child_project_file and parser and \
-                        _path_matches(item, exclude=auto.get('ignore_project_configuration'))\
+                        _path_matches(item, exclude=auto.get('ignore_project_configuration')) \
                         and _path_matches(item, auto.get('include'), auto.get('exclude')):
                     for project in parser.parse(child_project_file):
+                        match_project = True
                         yield project
                 else:
                     if _path_matches(item, auto.get('include'), auto.get('exclude')):
+                        match_project = True
                         yield {'path': child_fullpath, 'auto_configured': True}
+        if not match_project:
+            raise AutoConfigureNoProject(
+                "No project found with auto_configure. Check you configuration file to include some projects.")

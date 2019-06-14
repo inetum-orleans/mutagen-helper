@@ -4,6 +4,7 @@ import pytest
 
 from mutagen_helper import scanner
 from mutagen_helper.parser import ProjectParser
+from mutagen_helper.scanner import AutoConfigureNoProject
 
 
 @pytest.fixture
@@ -81,3 +82,8 @@ def test_auto_excludes(cwd_path: str):
     assert len(config) == 1
     assert 'auto_configured' in config[0]
     assert config[0]['auto_configured']
+
+
+def test_auto_no_project(cwd_path: str):
+    with pytest.raises(AutoConfigureNoProject):
+        list(scanner.auto_configure(cwd_path, {'enabled': True, 'exclude': ['*']}, parser=parser))

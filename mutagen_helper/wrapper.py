@@ -53,7 +53,7 @@ class MutagenListParser:
             return []
         lines = output.splitlines()
         if not self._is_separator_line(lines[0]):
-            raise
+            raise WrapperRunException("Invalid structure for mutagen output", result=result)
         del lines[0]
         stack = [{}]
         sessions = []
