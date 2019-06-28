@@ -22,7 +22,7 @@ or
 Quickstart
 ----------
 
-- Install mutagen as usual, and make it available in the user `PATH` or define `MUTAGEN_HELPER_MUTAGEN_BIN` environment 
+- Install mutagen as usual (version `0.9.0+`), and make it available in the user `PATH` or define `MUTAGEN_HELPER_MUTAGEN_BIN` environment 
 variable to the path of the mutagen binary as an alternative (ie: `C:\tools\mutagen\mutagen.exe`).
 
 - Create `.mutagen.yml` file inside some local directory you want to synchronize and set `beta` property to the 
