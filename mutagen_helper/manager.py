@@ -87,7 +87,10 @@ class ManagerInternals:
         session_info = self.wrapper.list(label_selector=self._build_label_selector(project_name, session['name']),
                                          one=True)
         if session_info:
-            logging.info('Session %s[%s] (%s) already exists.' % (project_name, name, session_info['Session']))
+            # Mutagen 0.9 use Session, but Mutagen 0.10+ use identifier.
+            logging.info('Session %s[%s] (%s) already exists.'
+                         % (project_name, name,
+                            session_info['Identifier'] if 'Identifier' in session_info else session_info['Session']))
             return
         else:
             logging.debug('No session %s[%s] found.' % (name, project_name))

@@ -48,22 +48,31 @@ class MutagenListParser:
     def _is_separator_line(self, line):
         return line.startswith('-' * 10)
 
+    def _is_no_session_line(self, line):
+        return line == 'No sessions found'
+
     def parse(self, output, result=None):
         if not output:
             return []
         lines = output.splitlines()
-        if not self._is_separator_line(lines[0]):
-            raise WrapperRunException("Invalid structure for mutagen output", result=result)
-        del lines[0]
+        first_separator_reached = False
         stack = [{}]
         sessions = []
+        current_object = {}
         previous_key = None
         for line in lines:
+            if not first_separator_reached:
+                if self._is_separator_line(line):
+                    first_separator_reached = True
+                continue
             if self._is_separator_line(line):
                 sessions.append(stack[0])
                 previous_key = None
                 current_session = {}
                 stack = [current_session]
+            elif self._is_no_session_line(line):
+                sessions = []
+                break
             else:
                 if ':' in line:
                     key, value = line.split(":", 1)
