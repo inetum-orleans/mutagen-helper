@@ -1,7 +1,7 @@
 History
 =======
 
-1.0.1 (unreleased)
+1.1.0 (2019-07-29)
 ------------------
 
 - Add support for mutagen `0.10.0`.
