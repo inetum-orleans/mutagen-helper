@@ -4,8 +4,8 @@ History
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for mutagen `0.10.0`.
+- Rename configuration file from `mutagen.yml` to `mutagen-helper.yml`.
 
 1.0.0 (2019-06-14)
 ------------------

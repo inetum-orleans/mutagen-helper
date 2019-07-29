@@ -10,6 +10,16 @@ Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisatio
 on directories you want to synchronise. Created sessions are marked with a session name and a project name that makes
 them easier to manage.
 
+About mutagen 0.10+
+===================
+
+Mutagen was written on earlier version of Mutagen. Mutagen `0.10+` brings a new 
+[Orchestration feature](https://mutagen.io/documentation/orchestration/) that makes most mutagen-helper features
+redundant, so you should first give a try to this new feature.
+
+I'm still working with [Mutagen's author Jacob Howard](https://github.com/havoc-io) to embed as much as mutagen-helper 
+use cases as possible into mutagen's core ([mutagen-io/mutagen#109](https://github.com/mutagen-io/mutagen/issues/109)).
+
 Install
 -------
 
