@@ -23,9 +23,9 @@ Quickstart
 ----------
 
 - Install mutagen as usual (version `0.9+`), and make it available in the user `PATH` or define `MUTAGEN_HELPER_MUTAGEN_BIN` environment 
-variable to the path of the mutagen binary as an alternative (ie: `C:\tools\mutagen\mutagen.exe`).
+variable to the path of the mutagen binary as an alternative (ie: `C:\tools\mutagen\mutagen-helper.exe`).
 
-- Create `.mutagen.yml` file inside some local directory you want to synchronize and set `beta` property to the 
+- Create `.mutagen-helper.yml` file inside some local directory you want to synchronize and set `beta` property to the 
 destination of the synchronisation.
 
 ```yaml
@@ -85,13 +85,13 @@ You may `up` multiple projects at the same time if all your projects lies in the
 ```text
 C:\workspace
     |- project1
-        |- .mutagen.yml
+        |- .mutagen-helper.yml
         |- ...
     |- project2
-        |- .mutagen.yml
+        |- .mutagen-helper.yml
         |- ...
     |- project3
-        |- .mutagen.yml
+        |- .mutagen-helper.yml
         |- ...
 ```
 
@@ -113,7 +113,7 @@ export MUTAGEN_HELPER_PATH=C:\workspace
 mutagen-helper up
 ```
 
-Those command will create all mutagen sessions defined in `.mutagen.yml` of each subdirectories of `C:\workspace`.
+Those command will create all mutagen sessions defined in `.mutagen-helper.yml` of each subdirectories of `C:\workspace`.
 
 Advanced configuration
 ----------------------
@@ -180,7 +180,7 @@ projects:
 Automatic configuration
 -----------------------
 
-You can automate the configuration of a directory containing many project. Create a `.mutagen.yml` file inside
+You can automate the configuration of a directory containing many project. Create a `.mutagen-helper.yml` file inside
 the parent of those directories, and set `auto_configure`.
 
 ```yaml
@@ -189,7 +189,7 @@ auto_configure: True
 
 ```text
 C:\workspace
-    |- .mutagen.yml  # Auto configure YAML file
+    |- .mutagen-helper.yml  # Auto configure YAML file
     |- project-dev1  # Projects without any mutagen-helper configuration file
         |- ...
     |- project-dev2
@@ -214,7 +214,6 @@ auto_configure:
   exclude:
     - '*-stage'
 options:
-  scan-mode: accelerated
   sync-mode: two-way-resolved
   default-file-mode-beta: 644
   default-directory-mode-beta: 755
@@ -233,7 +232,6 @@ beta: '${DOCKER_DEVBOX_MUTAGEN_BETA:-root@192.168.1.100:/home/vagrant/projects}'
 auto_configure: 
   ignore_project_configuration: True  # It can also be a list of glob for project names to ignore
 options:
-  scan-mode: accelerated
   sync-mode: two-way-resolved
   default-file-mode-beta: 644
   default-directory-mode-beta: 755
@@ -248,10 +246,10 @@ Some properties have default values, based on environment variables if defined.
 
   - `alpha`
     - `MUTAGEN_HELPER_ALPHA` environment variable, *or*
-    - Directory when the `.mutagen.yml` resides
+    - Directory when the `.mutagen-helper.yml` resides
   - `beta`: 
     - `MUTAGEN_HELPER_BETA` environment variable, *or*
-    - mandatory in the `.mutagen.yml`
+    - mandatory in the `.mutagen-helper.yml`
   - `append_project_name_to_beta`: 
     - `MUTAGEN_HELPER_APPEND_PROJECT_NAME_TO_BETA`, *or*
     -  `True`

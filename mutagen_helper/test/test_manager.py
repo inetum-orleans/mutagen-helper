@@ -37,16 +37,16 @@ def test_manager_project_files(manager: Manager, cwd_path):
     files = list(manager.project_files(cwd_path))
     assert files == []
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen2 = os.path.join(path3, '.mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen2 = os.path.join(path3, '.mutagen-helper.yaml')
 
-    with open(os.path.join(path1, '.mutagen.yml'), 'w'):
+    with open(os.path.join(path1, '.mutagen-helper.yml'), 'w'):
         pass
 
-    with open(os.path.join(path3, '.mutagen.yaml'), 'w'):
+    with open(os.path.join(path3, '.mutagen-helper.yaml'), 'w'):
         pass
 
-    with open(os.path.join(path4, '.mutagen.yaml'), 'w'):
+    with open(os.path.join(path4, '.mutagen-helper.yaml'), 'w'):
         pass
 
     files = list(manager.project_files(cwd_path))
@@ -67,8 +67,8 @@ def test_up_and_down(manager: Manager, cwd_path: str):
     os.mkdir(path3)
     os.mkdir(path4)
 
-    mutagen1 = os.path.join(path1, 'mutagen.yml')
-    mutagen2 = os.path.join(path3, '.mutagen.yaml')
+    mutagen1 = os.path.join(path1, 'mutagen-helper.yml')
+    mutagen2 = os.path.join(path3, '.mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -103,8 +103,8 @@ def test_up_and_down_with_project_and_session_name(manager: Manager, cwd_path: s
     os.mkdir(path3)
     os.mkdir(path4)
 
-    mutagen1 = os.path.join(path1, 'mutagen.yml')
-    mutagen2 = os.path.join(path3, '.mutagen.yaml')
+    mutagen1 = os.path.join(path1, 'mutagen-helper.yml')
+    mutagen2 = os.path.join(path3, '.mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -149,8 +149,8 @@ def test_up_twice_and_down_twice(manager: Manager, cwd_path: str):
     os.mkdir(path3)
     os.mkdir(path4)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen2 = os.path.join(path3, '.mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen2 = os.path.join(path3, '.mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -190,8 +190,8 @@ def test_up_and_down_with_resume_pause_flush(manager: Manager, cwd_path: str):
     os.mkdir(path3)
     os.mkdir(path4)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen2 = os.path.join(path3, 'mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen2 = os.path.join(path3, 'mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -226,10 +226,10 @@ def test_auto_configure(manager: Manager, cwd_path: str):
     os.mkdir(path4)
     os.mkdir(path5)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen3 = os.path.join(path3, 'mutagen.yaml')
-    mutagen5 = os.path.join(path5, 'mutagen.yaml')
-    mutagen_auto = os.path.join(cwd_path, 'mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen3 = os.path.join(path3, 'mutagen-helper.yaml')
+    mutagen5 = os.path.join(path5, 'mutagen-helper.yaml')
+    mutagen_auto = os.path.join(cwd_path, 'mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -281,10 +281,10 @@ def test_auto_configure_ignore_project_configuration(manager: Manager, cwd_path:
     os.mkdir(path4)
     os.mkdir(path5)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen3 = os.path.join(path3, 'mutagen.yaml')
-    mutagen5 = os.path.join(path5, 'mutagen.yaml')
-    mutagen_auto = os.path.join(cwd_path, 'mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen3 = os.path.join(path3, 'mutagen-helper.yaml')
+    mutagen5 = os.path.join(path5, 'mutagen-helper.yaml')
+    mutagen_auto = os.path.join(cwd_path, 'mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))
@@ -336,10 +336,10 @@ def test_auto_configure_advanced(manager: Manager, cwd_path: str):
     os.mkdir(path4)
     os.mkdir(path5)
 
-    mutagen1 = os.path.join(path1, '.mutagen.yml')
-    mutagen3 = os.path.join(path3, 'mutagen.yaml')
-    mutagen5 = os.path.join(path5, 'mutagen.yaml')
-    mutagen_auto = os.path.join(cwd_path, 'mutagen.yaml')
+    mutagen1 = os.path.join(path1, '.mutagen-helper.yml')
+    mutagen3 = os.path.join(path3, 'mutagen-helper.yaml')
+    mutagen5 = os.path.join(path5, 'mutagen-helper.yaml')
+    mutagen_auto = os.path.join(cwd_path, 'mutagen-helper.yaml')
 
     with open(mutagen1, 'wb') as f:
         f.write(pkg_resources.resource_string(__name__, "data/test1.yml"))

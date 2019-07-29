@@ -15,7 +15,7 @@ class AutoConfigureNoProject(ScannerException):
 
 
 def configuration_file(path):
-    candidates = ['mutagen.yml', 'mutagen.yaml', '.mutagen.yml', '.mutagen.yaml']
+    candidates = ['mutagen-helper.yml', 'mutagen-helper.yaml', '.mutagen-helper.yml', '.mutagen-helper.yaml']
     for candidate in candidates:
         candidate_path = os.path.join(path, candidate)
         if os.path.isfile(os.path.join(path, candidate)):
