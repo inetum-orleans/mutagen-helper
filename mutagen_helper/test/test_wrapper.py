@@ -31,7 +31,6 @@ def test_create_and_terminate(wrapper: MutagenWrapper, cwd_path):
     session_id = wrapper.create(alpha, beta)
     try:
         assert len(session_id)
-        assert session_id.count('-') == 4
     finally:
         wrapper.terminate(session_id)
 
@@ -60,19 +59,22 @@ def test_list(wrapper: MutagenWrapper, cwd_path):
 def test_parse(wrapper: MutagenWrapper):
     data = wrapper.list_parser.parse(
         str(pkg_resources.resource_string(__name__, "data/mutagen.log"), encoding='UTF-8'))
-    expected_data = json.load(pkg_resources.resource_stream(__name__, "data/mutagen.json"), encoding='UTF-8')
+    expected_data = json.loads(
+        str(pkg_resources.resource_string(__name__, "data/mutagen.json"), encoding='UTF-8'))
     assert data == expected_data
 
 
 def test_parse_with_problems(wrapper: MutagenWrapper):
     data = wrapper.list_parser.parse(
         str(pkg_resources.resource_string(__name__, "data/mutagen-problems.log"), encoding='UTF-8'))
-    expected_data = json.load(pkg_resources.resource_stream(__name__, "data/mutagen-problems.json"), encoding='UTF-8')
+    expected_data = json.loads(
+        str(pkg_resources.resource_string(__name__, "data/mutagen-problems.json"), encoding='UTF-8'))
     assert data == expected_data
 
 
 def test_parse_with_ignores(wrapper: MutagenWrapper):
     data = wrapper.list_parser.parse(
         str(pkg_resources.resource_string(__name__, "data/mutagen.log"), encoding='UTF-8'))
-    expected_data = json.load(pkg_resources.resource_stream(__name__, "data/mutagen.json"), encoding='UTF-8')
+    expected_data = json.loads(
+        str(pkg_resources.resource_string(__name__, "data/mutagen.json"), encoding='UTF-8'))
     assert data == expected_data

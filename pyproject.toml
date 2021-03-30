@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "mutagen-helper"
+version = "1.1.0"
+description = "Mutagen Helper allow you to define Mutagen synchronisation sessions inside a configuration file on directories you want to synchronise. Created sessions are marked with a session name and a project name that makes them easier to manage."
+authors = ["Rémi Alvergnat <toilal.dev@gmail.com>"]
+keywords = ["mutagen", "sync", "orchestrator"]
+license = "MIT"
+repository = 'https://github.com/gfi-centre-ouest/mutagen-helper'
+homepage = 'https://github.com/gfi-centre-ouest/mutagen-helper'
+documentation = 'https://github.com/gfi-centre-ouest/mutagen-helper'
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Topic :: System :: Networking',
+    'Topic :: System :: Filesystems'
+]
+
+[tool.poetry.scripts]
+mutagen-helper = 'mutagen_helper.__main__:main'
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7.1.2"
+PyYAML = "^5.4.1"
+expandvars = "^0.6.5"
+
+[tool.poetry.dev-dependencies]
+pyinstaller = "^4.2"
+pytest = "^6.2.2"
+flake8 = "^3.9.0"
+pytest-cov = "^2.11.1"
+python-semantic-release = "^7.15.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,299 @@
+name: ci
+on:
+  push: ~
+  pull_request: ~
+jobs:
+  ci:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+
+    name: Python ${{ matrix.python-version }} (mutagen ${{ matrix.mutagen-version }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        mutagen-version: [ 0.9.2, 0.11.8 ]
+
+    steps:
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade setuptools
+        run: |
+          pip install --upgrade setuptools
+        if: matrix.python-version == '3.6'
+
+      - name: Install mutagen
+        run: |
+          curl -fsSL -o mutagen.tar.gz https://github.com/havoc-io/mutagen/releases/download/v${MUTAGEN_VERSION}/mutagen_linux_amd64_v${MUTAGEN_VERSION}.tar.gz
+          mkdir -p "$HOME/bin" && tar zxvf mutagen.tar.gz -C $HOME/bin
+          echo "$HOME/bin" >> $GITHUB_PATH
+        env:
+          MUTAGEN_VERSION: ${{ matrix.mutagen-version }}
+
+      - name: Start mutagen
+        run: |
+          mutagen daemon start
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Flake8
+        run: poetry run flake8
+
+      - name: Test
+        run: |
+          poetry run pytest --cov=mutagen_helper
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+
+  commitlint:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v3
+
+  build-setuptools:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    needs: [ ci ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Git User config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Bump version
+        run: semantic-release -v DEBUG version
+
+      - name: Build
+        run: poetry build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: mutagen-helper-python
+          path: ./dist
+
+  build-bin-linux:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    needs: [ ci ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Git User config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Bump version
+        run: semantic-release -v DEBUG version
+
+      - name: Binary
+        run: pyinstaller --dist ./dist mutagen-helper.spec
+
+      - name: Check binary
+        run: ./dist/mutagen-helper --version
+
+      - uses: actions/upload-artifact@v2
+        if: matrix.regex == '0'
+        with:
+          name: mutagen-helper-linux
+          path: ./dist
+
+  build-bin-windows:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    needs: [ ci ]
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Git User config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Bump version
+        run: semantic-release -v DEBUG version
+
+      - name: Binary
+        run: pyinstaller --dist ./dist mutagen-helper.spec
+
+      - name: Check binary
+        run: ./dist/mutagen-helper.exe --version
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: mutagen-helper-windows
+          path: ./dist
+
+  build-bin-macos:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    needs: [ ci ]
+
+    runs-on: macos-latest
+
+    steps:
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Git User config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Bump version
+        run: semantic-release -v DEBUG version
+
+      - name: Binary
+        run: pyinstaller --dist ./dist mutagen-helper.spec
+
+      - name: Check binary
+        run: ./dist/mutagen-helper --version
+
+      - uses: actions/upload-artifact@v2
+        if: matrix.regex == '0'
+        with:
+          name: mutagen-helper-macos
+          path: ./dist
+
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [ commitlint, build-setuptools, build-bin-linux, build-bin-windows, build-bin-macos ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Copy artifacts to ./dist
+        run: |
+          mkdir -p ./dist
+          mv artifacts/mutagen-helper-bin-linux/mutagen-helper ./dist/mutagen-helper-linux
+          mv artifacts/mutagen-helper-bin-macos/mutagen-helper ./dist/mutagen-helper-macos
+          mv artifacts/mutagen-helper-bin-windows/mutagen-helper.exe ./dist/mutagen-helper-windows.exe
+          mv artifacts/mutagen-helper-python/* ./dist
+
+      - name: Git User config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Install python-semantic-release
+        run: pip install python-semantic-release
+
+      - name: Publish release
+        run: semantic-release -v DEBUG publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Merge main to develop
+        uses: robotology/gh-action-nightly-merge@v1.3.2
+        with:
+          stable_branch: 'main'
+          development_branch: 'develop'
+          allow_ff: true
+          user_name: github-actions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
