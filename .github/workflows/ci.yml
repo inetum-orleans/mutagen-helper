@@ -151,9 +151,8 @@ jobs:
         run: ./dist/mutagen-helper --version
 
       - uses: actions/upload-artifact@v2
-        if: matrix.regex == '0'
         with:
-          name: mutagen-helper-linux
+          name: mutagen-helper-bin-linux
           path: ./dist
 
   build-bin-windows:
@@ -197,7 +196,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: mutagen-helper-windows
+          name: mutagen-helper-bin-windows
           path: ./dist
 
   build-bin-macos:
@@ -240,9 +239,8 @@ jobs:
         run: ./dist/mutagen-helper --version
 
       - uses: actions/upload-artifact@v2
-        if: matrix.regex == '0'
         with:
-          name: mutagen-helper-macos
+          name: mutagen-helper-bin-macos
           path: ./dist
 
   release:
