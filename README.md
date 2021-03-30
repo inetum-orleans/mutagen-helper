@@ -3,8 +3,10 @@ Mutagen Helper
 
 [![Latest Version](http://img.shields.io/pypi/v/mutagen-helper.svg)](https://pypi.python.org/pypi/mutagen-helper)
 ![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)
-[![Build Status](http://img.shields.io/travis/gfi-centre-ouest/mutagen-helper.svg)](https://travis-ci.org/gfi-centre-ouest/mutagen-helper)
-[![Coveralls](http://img.shields.io/coveralls/gfi-centre-ouest/mutagen-helper.svg)](https://coveralls.io/github/gfi-centre-ouest/mutagen-helper?branch=develop)
+[![Build Status](https://img.shields.io/github/workflow/status/inetum-orleans/mutagen-helper/ci)](https://github.com/inetum-orleans/mutagen-helper/actions?query=workflow%3Aci)
+[![Codecov](https://img.shields.io/codecov/c/github/inetum-orleans/mutagen-helper)](https://codecov.io/gh/inetum-orleans/mutagen-helper)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/relekang/python-semantic-release)
+
 
 Mutagen Helper allow you to define [Mutagen](https://mutagen.io/) synchronisation sessions inside a configuration file 
 on directories you want to synchronise. Created sessions are marked with a session name and a project name that makes

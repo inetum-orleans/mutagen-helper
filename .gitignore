@@ -4,6 +4,7 @@ __pycache__
 *.pyo
 .eggs/
 *.egg-info/
+.tox/
 dist/
 build/
 mutagen-helper.json
