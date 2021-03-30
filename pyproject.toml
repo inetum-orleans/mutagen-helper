@@ -5,6 +5,7 @@ description = "Mutagen Helper allow you to define Mutagen synchronisation sessio
 authors = ["Rémi Alvergnat <toilal.dev@gmail.com>"]
 keywords = ["mutagen", "sync", "orchestrator"]
 license = "MIT"
+readme = "README.md"
 repository = 'https://github.com/gfi-centre-ouest/mutagen-helper'
 homepage = 'https://github.com/gfi-centre-ouest/mutagen-helper'
 documentation = 'https://github.com/gfi-centre-ouest/mutagen-helper'
