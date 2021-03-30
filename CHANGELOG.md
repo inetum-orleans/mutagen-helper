@@ -3,6 +3,10 @@ Changelog
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2021-03-30)
+### Feature
+* Better packaging, semantic release, github actions ([`48e8408`](https://github.com/inetum-orleans/mutagen-helper/commit/48e840847f942382d5887a85878b87fbc4d264e4))
+
 1.1.0 (2019-07-29)
 ------------------
 

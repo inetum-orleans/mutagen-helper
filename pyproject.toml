@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mutagen-helper"
-version = "1.1.0"
+version = "1.2.0"
 description = "Mutagen Helper allow you to define Mutagen synchronisation sessions inside a configuration file on directories you want to synchronise. Created sessions are marked with a session name and a project name that makes them easier to manage."
 authors = ["Rémi Alvergnat <toilal.dev@gmail.com>"]
 keywords = ["mutagen", "sync", "orchestrator"]
