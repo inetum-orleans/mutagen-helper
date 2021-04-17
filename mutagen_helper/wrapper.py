@@ -49,7 +49,7 @@ class MutagenListParser:
         return line.startswith('-' * 10)
 
     def _is_no_session_line(self, line):
-        return line == 'No sessions found'
+        return line in ['No sessions found', 'No synchronization sessions found']
 
     def parse(self, output, result=None):
         if not output:
@@ -277,7 +277,7 @@ class MutagenWrapper(ProcessWrapper):
         elif isinstance(options, str):
             options = shlex.split(options)
 
-        command = ['create', alpha, beta] + (list(options) if options else [])
+        command = ['sync', 'create', alpha, beta] + (list(options) if options else [])
         result = self.run(command)
         ret = result.stdout
         match = re.search('Created session\\s(.*?)\\s', ret)
@@ -310,7 +310,7 @@ class MutagenWrapper(ProcessWrapper):
         return self._handle_result(result, session_ids, one)
 
     def _session_control(self, command, session_id, label_selector):
-        args = [command]
+        args = ['sync', command]
         if session_id:
             args.append(session_id)
         elif label_selector:
@@ -322,7 +322,7 @@ class MutagenWrapper(ProcessWrapper):
 
     def list(self, session_id=None, label_selector=None, long=False, one=False):
         try:
-            args = ['list']
+            args = ['sync', 'list']
             if session_id:
                 args.append(session_id)
             if label_selector:
