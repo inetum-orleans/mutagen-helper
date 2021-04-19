@@ -3,6 +3,17 @@ Changelog
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2021-04-19)
+### Feature
+* Add support for mutagen v0.12 ([#16](https://github.com/inetum-orleans/mutagen-helper/issues/16)) ([`7b4917d`](https://github.com/inetum-orleans/mutagen-helper/commit/7b4917d5bfaba2d8243730f4d3f2d899d6540188))
+
+### Fix
+* **wrapper:** Do not buffer subprocess ([`caf49df`](https://github.com/inetum-orleans/mutagen-helper/commit/caf49dfaa9ec0304c1fda56c634dd73ccd5d3384))
+* **readme:** Add readme to project configuration ([`e48212c`](https://github.com/inetum-orleans/mutagen-helper/commit/e48212cd72138bbc3c673072b77de2f9212de2c6))
+
+### Breaking
+* support for mutagen v0.9 and below has been dropped. ([`7b4917d`](https://github.com/inetum-orleans/mutagen-helper/commit/7b4917d5bfaba2d8243730f4d3f2d899d6540188))
+
 ## v1.2.0 (2021-03-30)
 ### Feature
 * Better packaging, semantic release, github actions ([`48e8408`](https://github.com/inetum-orleans/mutagen-helper/commit/48e840847f942382d5887a85878b87fbc4d264e4))
